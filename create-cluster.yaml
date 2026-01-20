@@ -1,0 +1,54 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: k8-cluster
+  region: ap-south-1
+  version: "1.34"
+autoModeConfig:
+  enabled: false
+addonsConfig:
+  autoApplyPodIdentityAssociations: true
+
+availabilityZones: ["ap-south-1a", "ap-south-1b"]
+
+vpc:
+  cidr: 192.169.0.0/16  #change to 192.168.0.0/16 in next deployment
+  nat:
+    gateway: Disable
+
+iam:
+  withOIDC: true
+  serviceAccounts:
+    - metadata:
+        name: aws-load-balancer-controller
+        namespace: kube-system
+      wellKnownPolicies:
+        awsLoadBalancerController: true        
+managedNodeGroups:
+  - name: ng-1
+    instanceType: t4g.medium
+    minSize: 1
+    maxSize: 1
+    desiredCapacity: 1
+    volumeSize: 20
+    volumeType: gp3
+    ssh:
+      allow: false
+    iam:
+      withAddonPolicies:
+        externalDNS: false
+        certManager: true
+
+addons:
+  - name: aws-ebs-csi-driver
+    configurationValues: '{ "defaultStorageClass": { "enabled": true } }'
+  - name: vpc-cni
+    resolveConflicts: overwrite
+  - name: kube-proxy
+    resolveConflicts: overwrite
+  - name: coredns
+    resolveConflicts: overwrite
+  - name: metrics-server
+    resolveConflicts: overwrite
+  - name: eks-pod-identity-agent
