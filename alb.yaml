@@ -1,0 +1,23 @@
+# Default values for aws-load-balancer-controller.
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  name: aws-load-balancer-controller
+
+# The ingress class this controller will satisfy. If not specified, controller will match all
+# ingresses without ingress class annotation and ingresses of type alb
+ingressClass: alb
+
+# To use IngressClass resource instead of annotation, before you need to install the IngressClass resource pointing to controller.
+# If specified as true, the IngressClass resource will be created.
+createIngressClassResource: true
+
+# The AWS region for the kubernetes cluster. Set to use KIAM or kube2iam for example.
+region: us-east-1
+
+# The address the metric endpoint binds to. (default ":8080")
+metricsBindAddr: ""
+
+# defaultSSLPolicy specifies the default SSL policy to use for TLS/HTTPS listeners
+defaultSSLPolicy: ELBSecurityPolicy-2016-08
