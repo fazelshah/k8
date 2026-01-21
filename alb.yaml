@@ -14,7 +14,7 @@ ingressClass: alb
 createIngressClassResource: true
 
 # The AWS region for the kubernetes cluster. Set to use KIAM or kube2iam for example.
-region: us-east-1
+region: ap-south-1
 
 # The address the metric endpoint binds to. (default ":8080")
 metricsBindAddr: ""
