@@ -1,0 +1,6 @@
+controller:
+  publishService:
+    enabled: true
+  service:
+    enabled: true
+    externalTrafficPolicy: "Local"
