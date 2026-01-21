@@ -4,7 +4,7 @@ on:
   workflow_dispatch: {}   
 
 env:
-  EKS_CLUSTER_NAME: cryptlex-grafana-apm-eks-cluster-v34
+  EKS_CLUSTER_NAME: k8-cluster
   AWS_REGION: ap-south-1
 
 jobs:
