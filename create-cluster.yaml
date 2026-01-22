@@ -27,7 +27,7 @@ iam:
         awsLoadBalancerController: true        
 managedNodeGroups:
   - name: ng-1
-    instanceType: t4g.medium
+    instanceType: t2.micro
     minSize: 1
     maxSize: 1
     desiredCapacity: 1
