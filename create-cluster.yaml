@@ -28,9 +28,9 @@ iam:
 managedNodeGroups:
   - name: ng-1
     instanceType: t2.micro
-    minSize: 1
-    maxSize: 1
-    desiredCapacity: 1
+    minSize: 3
+    maxSize: 3
+    desiredCapacity: 3
     volumeSize: 20
     volumeType: gp3
     ssh:
