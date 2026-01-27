@@ -1,0 +1,15 @@
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - host: dora.test.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+service:
+  lake:
+    type: ClusterIP
+    port: 8080
