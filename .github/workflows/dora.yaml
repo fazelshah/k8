@@ -1,4 +1,4 @@
-name: ingress-deployment
+name: dora-deployment
 
 on:
   workflow_dispatch:
