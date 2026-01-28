@@ -1,6 +1,7 @@
 ingress:
   enabled: true
   ingressClassName: alb
+  region: ap-south-1
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
