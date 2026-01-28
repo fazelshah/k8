@@ -7,7 +7,7 @@ serviceAccount:
 
 # The ingress class this controller will satisfy. If not specified, controller will match all
 # ingresses without ingress class annotation and ingresses of type alb
-ingressClass: nlb
+ingressClass: alb
 
 # To use IngressClass resource instead of annotation, before you need to install the IngressClass resource pointing to controller.
 # If specified as true, the IngressClass resource will be created.
