@@ -1,15 +1,12 @@
 ingress:
   enabled: true
-  className: nginx
+  ingressClassName: nlb
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
   hosts:
     - host: dora.test.com
       paths:
         - path: /
-          pathType: ImplementationSpecific
-
-service:
-  lake:
-    type: ClusterIP
-    port: 8080
+          pathType: Prefix
