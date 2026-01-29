@@ -1,13 +1,16 @@
-# This section enables Ingress for the *application* deployment
 ingress:
   enabled: true
-  className: "nginx" # Use the specific class name of your controller
+  className: "nginx"
   hostname: devlake.example.com
-  # The chart's template uses this to define the actual rules
+  # Use ImplementationSpecific to allow regex characters in paths
+  pathType: ImplementationSpecific 
   annotations:
-    kubernetes.io/ingress.class: nginx 
+    kubernetes.io/ingress.class: nginx
+    # Required if your path uses regex like (.*)
+    nginx.ingress.kubernetes.io/use-regex: "true" 
+    # Often used with DevLake to handle path rewrites
+    nginx.ingress.kubernetes.io/rewrite-target: /$2 
 
-# Ensure the UI service port is set correctly (4000 by default)
 service:
-  type: NodePort # or ClusterIP, this defines the internal service
-  uiPort: 32001 # NodePort value, the Ingress uses the internal port
+  type: NodePort
+  uiPort: 32001
