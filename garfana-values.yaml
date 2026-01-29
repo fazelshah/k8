@@ -1,3 +1,11 @@
+certmanager:
+  enabled: true
+  issuer:
+    # Set this to your company email.
+    email: fazelshah1@gmail.com
+    # Set this to true once staging certificates are issued successfully.
+    # Otherwise you may run into rate-limiting issues.
+    production: true
 ingress:
   enabled: true
 
