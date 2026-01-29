@@ -1,21 +1,27 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: devlake-alb
-  namespace: default
+ingress:
+  enabled: true
+  className: "alb"
+  hostname: "devlake.example.com"
+  # ImplementationSpecific stops the controller from complaining about "Prefix" rules
+  pathType: ImplementationSpecific
+  
   annotations:
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/healthcheck-path: /
-spec:
-  ingressClassName: alb
-  rules:
-    - http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: devlake-ui
-                port:
-                  number: 4000
+    alb.ingress.kubernetes.io/scheme: "internet-facing"
+    alb.ingress.kubernetes.io/target-type: "ip"
+    # IMPORTANT: ALB doesn't support the complex DevLake regex. 
+    # Use these simplified paths instead:
+  extraPaths:
+    - path: /grafana/*
+      pathType: ImplementationSpecific
+      backend:
+        service:
+          name: devlake-grafana
+          port:
+            number: 3000
+    - path: /*
+      pathType: ImplementationSpecific
+      backend:
+        service:
+          name: devlake-ui
+          port:
+            number: 4000
