@@ -1,9 +1,24 @@
 ingress:
   enabled: true
-  className: "nginx"
-  hostname: devlake.example.com
-  # This setting must propagate to the 'pathType' field in the generated Ingress YAML
-  pathType: ImplementationSpecific 
+  # Use the ingress class name created by your ALB controller
+  className: "alb"
+  
+  # Set your specific domain here
+  hostname: "devlake.example.com"
+  
+  # ALB-specific annotations for AWS
   annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/use-regex: "true"
+    alb.ingress.kubernetes.io/scheme: "internet-facing"
+    alb.ingress.kubernetes.io/target-type: "ip"
+    alb.ingress.kubernetes.io/healthcheck-path: "/"
+    alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
+    # Optional: Groups multiple ingresses into one ALB if needed
+    # alb.ingress.kubernetes.io/group.name: "devlake-group"
+
+  # Path configuration
+  path: /
+  pathType: Prefix
+
+# Ensure the UI service matches the port in your manifest
+service:
+  uiPort: 4000
