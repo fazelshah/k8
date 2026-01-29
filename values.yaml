@@ -1,17 +1,13 @@
+# This section enables Ingress for the *application* deployment
 ingress:
   enabled: true
-  spec:
-    ingressClassName: nginx
-    hostname: devlake.example.com
-    # Add rules section to route to the correct service and port
-    rules:
-    - host: devlake.example.com
-      http:
-        paths:
-        - path: /
-          pathType: Prefix
-          backend:
-            service:
-              name: devlake-ui # Name of the service you want to route to
-              port:
-                number: 4000    # The port exposed by that service
+  className: "nginx" # Use the specific class name of your controller
+  hostname: devlake.example.com
+  # The chart's template uses this to define the actual rules
+  annotations:
+    kubernetes.io/ingress.class: nginx 
+
+# Ensure the UI service port is set correctly (4000 by default)
+service:
+  type: NodePort # or ClusterIP, this defines the internal service
+  uiPort: 32001 # NodePort value, the Ingress uses the internal port
