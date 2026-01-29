@@ -8,13 +8,13 @@ on:
         required: true
         type: choice
         options:
-        - k8-cluster
-      awsRegion: 
+          - k8-cluster
+      awsRegion:
         description: "AWS Region"
         required: true
         type: choice
         options:
-        - ap-south-1
+          - ap-south-1
 
 jobs:
   deploy:
@@ -33,18 +33,24 @@ jobs:
           aws-region: ${{ github.event.inputs.awsRegion }}
 
       - name: Setup Kubeconfig for Amazon EKS Cluster
-        run: aws eks update-kubeconfig --name ${{ github.event.inputs.eksClusterName }}
+        run: |
+          aws eks update-kubeconfig \
+            --name ${{ github.event.inputs.eksClusterName }} \
+            --region ${{ github.event.inputs.awsRegion }}
 
       - name: Setup Helm
         uses: azure/setup-helm@v4
         with:
-          version: "v3.19.2" # default is latest stable
+          version: "v3.19.2"
 
-      - name: Deploy Helm chart
+      - name: Deploy AWS Load Balancer Controller
         run: |
           helm repo add eks https://aws.github.io/eks-charts
           helm repo update
-          helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-controller --atomic --create-namespace --namespace kube-system --values ./alb.yaml /
-          --set clusterName=${{ github.event.inputs.eksClusterName }} \
-               --set region=${{ github.event.inputs.awsRegion }}
-             
+
+          helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-controller \
+            --namespace kube-system \
+            --atomic \
+            --values ./alb.yaml \
+            --set clusterName=${{ github.event.inputs.eksClusterName }} \
+            --set region=${{ github.event.inputs.awsRegion }}
