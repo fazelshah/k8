@@ -1,27 +1,20 @@
+# values.yaml file for the DevLake Helm Chart
+
+# This section tells Helm to create the Ingress resource
 ingress:
   enabled: true
-  className: "alb"
+  className: "alb" # Links to the IngressClass you verified
   hostname: "devlake.example.com"
-  # ImplementationSpecific stops the controller from complaining about "Prefix" rules
-  pathType: ImplementationSpecific
-  
+  pathType: ImplementationSpecific # Allows wildcards like /*
+
+  # AWS-specific annotations
   annotations:
-    alb.ingress.kubernetes.io/scheme: "internet-facing"
-    alb.ingress.kubernetes.io/target-type: "ip"
-    # IMPORTANT: ALB doesn't support the complex DevLake regex. 
-    # Use these simplified paths instead:
-  extraPaths:
-    - path: /grafana/*
-      pathType: ImplementationSpecific
-      backend:
-        service:
-          name: devlake-grafana
-          port:
-            number: 3000
-    - path: /*
-      pathType: ImplementationSpecific
-      backend:
-        service:
-          name: devlake-ui
-          port:
-            number: 4000
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /
+
+# This section ensures the correct service is targeted internally
+service:
+  # The chart should automatically use these values for the backend
+  type: ClusterIP # Ensure this is ClusterIP, not NodePort
+  uiPort: 4000
