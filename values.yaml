@@ -2,15 +2,8 @@ ingress:
   enabled: true
   className: "nginx"
   hostname: devlake.example.com
-  # Use ImplementationSpecific to allow regex characters in paths
+  # This setting must propagate to the 'pathType' field in the generated Ingress YAML
   pathType: ImplementationSpecific 
   annotations:
     kubernetes.io/ingress.class: nginx
-    # Required if your path uses regex like (.*)
-    nginx.ingress.kubernetes.io/use-regex: "true" 
-    # Often used with DevLake to handle path rewrites
-    nginx.ingress.kubernetes.io/rewrite-target: /$2 
-
-service:
-  type: NodePort
-  uiPort: 32001
+    nginx.ingress.kubernetes.io/use-regex: "true"
