@@ -1,24 +1,16 @@
+service:
+  type: ClusterIP
+  uiPort: 4000
+
 ingress:
   enabled: true
-  # Use the ingress class name created by your ALB controller
   className: "alb"
-  
-  # Set your specific domain here
   hostname: "devlake.example.com"
+  pathType: ImplementationSpecific # Bypasses the Prefix validation warning
   
-  # ALB-specific annotations for AWS
   annotations:
     alb.ingress.kubernetes.io/scheme: "internet-facing"
     alb.ingress.kubernetes.io/target-type: "ip"
     alb.ingress.kubernetes.io/healthcheck-path: "/"
-    alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
-    # Optional: Groups multiple ingresses into one ALB if needed
-    # alb.ingress.kubernetes.io/group.name: "devlake-group"
-
-  # Path configuration
-  path: /
-  pathType: Prefix
-
-# Ensure the UI service matches the port in your manifest
-service:
-  uiPort: 4000
+    # Required for DevLake's complex routing on ALB
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
