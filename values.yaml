@@ -1,5 +1,17 @@
 ingress:
   enabled: true
   spec:
-  ingressClassName: nginx
-  hostname: devlake.example.com
+    ingressClassName: nginx
+    hostname: devlake.example.com
+    # Add rules section to route to the correct service and port
+    rules:
+    - host: devlake.example.com
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: devlake-ui # Name of the service you want to route to
+              port:
+                number: 4000    # The port exposed by that service
