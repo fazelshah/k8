@@ -1,7 +1,7 @@
 persistence:
   enabled: true
   size: 5Gi
-  storageClass: gp3
+  #storageClass: gp3
 
 service:
   type: ClusterIP
