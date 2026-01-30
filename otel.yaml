@@ -1,0 +1,78 @@
+mode: deployment
+replicaCount: 2
+
+image:
+  repository: otel/opentelemetry-collector-k8s
+
+command:
+  name: otelcol-k8s
+
+presets:
+  kubernetesAttributes:
+    enabled: true
+
+# --------------------
+# Ingress (NGINX)
+# --------------------
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  hosts:
+    - host: otlp.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+          port: 4318
+  tls: []
+
+# --------------------
+# Resources
+# --------------------
+resources:
+  limits:
+    cpu: "1"
+    memory: "1Gi"
+  requests:
+    cpu: "100m"
+    memory: "256Mi"
+
+# --------------------
+# OpenTelemetry Config
+# --------------------
+config:
+  receivers:
+    otlp:
+      protocols:
+        http:
+          endpoint: 0.0.0.0:4318
+
+  processors:
+    batch: {}
+    resource:
+      attributes:
+        - key: job
+          from_attribute: service.name
+          action: upsert
+        - key: instance
+          from_attribute: service.instance.id
+          action: upsert
+
+  exporters:
+    debug: {}   # 🔥 IMPORTANT for testing (logs received data)
+
+  service:
+    pipelines:
+      traces:
+        receivers: [otlp]
+        processors: [batch]
+        exporters: [debug]
+      metrics:
+        receivers: [otlp]
+        processors: [batch]
+        exporters: [debug]
+      logs:
+        receivers: [otlp]
+        processors: [batch]
+        exporters: [debug]
