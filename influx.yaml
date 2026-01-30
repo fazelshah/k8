@@ -1,0 +1,16 @@
+persistence:
+  enabled: true
+  size: 5Gi
+  storageClass: gp3
+
+service:
+  type: ClusterIP
+
+auth:
+  enabled: false
+  admin:
+    username: admin
+    password: admin12345
+    #token: otel-token
+    organization: my-org
+    bucket: otel-metrics
