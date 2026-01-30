@@ -44,5 +44,5 @@ jobs:
         run: |
           helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
           helm repo update
-          helm upgrade --install opentelemetry-collector open-telemetry/opentelemetry-collector --atomic --create-namespace --namespace apm --values .otel.yaml 
+          helm upgrade --install opentelemetry-collector open-telemetry/opentelemetry-collector --atomic --create-namespace --namespace apm --values otel.yaml 
                
