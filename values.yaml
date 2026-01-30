@@ -1,20 +1,21 @@
-# values.yaml file for the DevLake Helm Chart
-
-# This section tells Helm to create the Ingress resource
+certmanager:
+  enabled: true
+  issuer:
+    # Set this to your company email.
+    email: fazelshah1@gmail.com
+    # Set this to true once staging certificates are issued successfully.
+    # Otherwise you may run into rate-limiting issues.
+    production: true
 ingress:
   enabled: true
-  className: "alb" # Links to the IngressClass you verified
-  hostname: "devlake.example.com"
-  pathType: ImplementationSpecific # Allows wildcards like /*
 
-  # AWS-specific annotations
+  ingressClassName: nginx
+
   annotations:
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/healthcheck-path: /
+    kubernetes.io/ingress.class: nginx
 
-# This section ensures the correct service is targeted internally
-service:
-  # The chart should automatically use these values for the backend
-  type: ClusterIP # Ensure this is ClusterIP, not NodePort
-  uiPort: 4000
+  hosts:
+    - devlake.example.com
+
+  path: /
+  pathType: Prefix
