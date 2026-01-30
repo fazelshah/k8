@@ -3,9 +3,10 @@ replicaCount: 2
 
 image:
   repository: otel/opentelemetry-collector-contrib
+  tag: 0.144.0
 
 command:
-  name: otelcol-k8s
+  name: otelcol-contrib
 
 presets:
   kubernetesAttributes:
