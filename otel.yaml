@@ -60,6 +60,11 @@ config:
           action: upsert
 
   exporters:
+    influxdb:
+      endpoint: http://influxdb-influxdb2.influx.svc.cluster.local:80
+      org: influxdata          # MUST match `influx org list`
+      bucket: otel-metrics
+      token: sq7Y6HrFT9S0NQfa9h9UMHV4hJQ7Rtsi
     debug: {}   # 🔥 IMPORTANT for testing (logs received data)
 
   service:
@@ -71,7 +76,7 @@ config:
       metrics:
         receivers: [otlp]
         processors: [batch]
-        exporters: [debug]
+        exporters: [influxdb]
       logs:
         receivers: [otlp]
         processors: [batch]
