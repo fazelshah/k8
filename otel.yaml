@@ -2,7 +2,7 @@ mode: deployment
 replicaCount: 2
 
 image:
-  repository: otel/opentelemetry-collector-k8s
+  repository: otel/opentelemetry-collector-contrib
 
 command:
   name: otelcol-k8s
@@ -61,7 +61,7 @@ config:
 
   exporters:
     influxdb:
-      endpoint: http://influxdb-influxdb2.influx.svc.cluster.local:80
+      endpoint: http://influxdb-influxdb2.influx.svc.cluster.local:8086
       org: influxdata          # MUST match `influx org list`
       bucket: otel-metrics
       token: sq7Y6HrFT9S0NQfa9h9UMHV4hJQ7Rtsi
