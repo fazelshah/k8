@@ -58,12 +58,7 @@ config:
         processors: [batch]
         exporters: [debug]
 
-extraEnvs:
-  - name: INFLUXDB_TOKEN
-    valueFrom:
-      secretKeyRef:
-        name: influxdb-influxdb2-auth
-        key: admin-token
+
 
 
 
