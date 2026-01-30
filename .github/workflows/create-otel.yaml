@@ -1,4 +1,4 @@
-name: ingress-deployment
+name: otel-deployment
 
 on:
   workflow_dispatch:
