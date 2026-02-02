@@ -42,11 +42,8 @@ config:
     batch: {}
 
   exporters:
-    influxdb:
-      endpoint: http://influxdb-influxdb2.influx.svc.cluster.local:8086
-      org: influxdata
-      bucket: otel-metrics
-      token: sq7Y6HrFT9S0NQfa9h9UMHV4hJQ7Rtsi
+    victoria:
+      endpoint: http://victoria-metrics-victoria-metrics-cluster-vmselect.victoria.svc.cluster.local:8481/select/0/prometheus
     debug: {}
 
   service:
@@ -55,7 +52,7 @@ config:
       metrics:
         receivers: [otlp]
         processors: [batch]
-        exporters: [influxdb]
+        exporters: [victoria]
       traces:
         receivers: [otlp]
         processors: [batch]
