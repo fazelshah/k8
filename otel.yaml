@@ -11,6 +11,12 @@ command:
 presets:
   kubernetesAttributes:
     enabled: true
+  clusterMetrics:
+    enabled: true
+  hostMetrics:
+    enabled: false
+  kubeletMetrics:
+    enabled: false
 
 resources:
   limits:
