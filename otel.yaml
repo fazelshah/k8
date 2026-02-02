@@ -1,5 +1,5 @@
 mode: deployment
-replicaCount: 2
+replicaCount: 1
 
 image:
   repository: otel/opentelemetry-collector-contrib
