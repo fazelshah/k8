@@ -42,8 +42,8 @@ config:
     batch: {}
 
   exporters:
-    victoria:
-      endpoint: http://victoria-metrics-victoria-metrics-cluster-vmselect.victoria.svc.cluster.local:8481/select/0/prometheus
+    prometheusremotewrite:
+      endpoint: http://victoria-metrics-victoria-metrics-cluster-vminsert.victoria.svc.cluster.local:8480/insert/0/prometheus
     debug: {}
 
   service:
@@ -52,7 +52,7 @@ config:
       metrics:
         receivers: [otlp]
         processors: [batch]
-        exporters: [victoria]
+        exporters: [prometheusremotewrite]
       traces:
         receivers: [otlp]
         processors: [batch]
@@ -61,10 +61,3 @@ config:
         receivers: [otlp]
         processors: [batch]
         exporters: [debug]
-
-
-
-
-
-
-
