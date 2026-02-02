@@ -1,0 +1,19 @@
+server:
+  enabled: true
+
+  persistentVolume:
+    enabled: true
+    size: 5Gi
+    storageClass: ebs-csi-default-sc   # change if needed
+
+  service:
+    type: ClusterIP
+    port: 8428
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 1
+    memory: 1Gi
