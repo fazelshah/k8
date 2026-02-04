@@ -1,4 +1,4 @@
-name: ingress-deployment
+name: issuer-deployment
 
 on:
   workflow_dispatch:
