@@ -15,7 +15,7 @@ ingress:
     kubernetes.io/ingress.class: nginx
 
   hosts:
-    - grafana.example.com
+    - grafana.fazelshah.fun
 
   path: /
   pathType: Prefix
