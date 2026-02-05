@@ -40,9 +40,14 @@ jobs:
         with:
           version: "v3.19.2" # default is latest stable
 
-      - name: Deploy Helm chart
+      - name: Deploy Helm chart deployment
         run: |
           helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
           helm repo update
           helm upgrade --install opentelemetry-collector open-telemetry/opentelemetry-collector --atomic --create-namespace --namespace apm --values otel.yaml 
                
+      - name: Deploy Helm chart daemon
+        run: |
+          helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+          helm repo update
+          helm upgrade --install opentelemetry-collector open-telemetry/opentelemetry-collector --atomic --create-namespace --namespace apm --values otel-daemon.yaml
