@@ -27,6 +27,7 @@ resources:
     memory: "256Mi"
 
 config:
+
   extensions:
     health_check: {}
 
@@ -39,25 +40,39 @@ config:
           endpoint: 0.0.0.0:4318
 
   processors:
+    memory_limiter:
+      limit_mib: 512
     batch: {}
 
   exporters:
     prometheusremotewrite:
       endpoint: http://victoria-metrics-victoria-metrics-cluster-vminsert.victoria.svc.cluster.local:8480/insert/0/prometheus
+
+    otlp/signoz:
+      endpoint: ingest.us.signoz.cloud:443
+      headers:
+        signoz-ingestion-key: 0gFbj7tYJP9JWs3c6KTvAdGv3JfXIAKEOAmF
+      tls:
+        insecure: false
+
     debug: {}
 
   service:
     extensions: [health_check]
+
     pipelines:
+
       metrics:
         receivers: [otlp]
-        processors: [batch]
-        exporters: [prometheusremotewrite]
+        processors: [memory_limiter, batch]
+        exporters: [prometheusremotewrite, otlp/signoz]
+
       traces:
         receivers: [otlp]
-        processors: [batch]
-        exporters: [debug]
+        processors: [memory_limiter, batch]
+        exporters: [otlp/signoz]
+
       logs:
         receivers: [otlp]
-        processors: [batch]
-        exporters: [debug]
+        processors: [memory_limiter, batch]
+        exporters: [otlp/signoz]
