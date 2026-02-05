@@ -1,0 +1,76 @@
+mode: daemonset
+# https://opentelemetry.io/docs/kubernetes/helm/collector/#kubernetes-attributes-preset
+image:
+  repository: otel/opentelemetry-collector-contrib
+  tag: 0.144.0
+
+command:
+  name: otelcol-contrib
+presets:
+  kubernetesAttributes:
+    enabled: true
+  clusterMetrics:
+    enabled: false
+  hostMetrics:
+    enabled: true
+  kubeletMetrics:
+    enabled: true
+
+resources:
+  limits:
+    cpu: "1"
+    memory: "1Gi"
+  requests:
+    cpu: "100m"
+    memory: "256Mi"
+
+config:
+
+  extensions:
+    health_check: {}
+
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+
+  processors:
+    memory_limiter:
+      limit_mib: 512
+    batch: {}
+
+  exporters:
+    prometheusremotewrite:
+      endpoint: http://victoria-metrics-victoria-metrics-cluster-vminsert.victoria.svc.cluster.local:8480/insert/0/prometheus
+
+    otlp/signoz:
+      endpoint: ingest.us.signoz.cloud:443
+      headers:
+        signoz-ingestion-key: 0gFbj7tYJP9JWs3c6KTvAdGv3JfXIAKEOAmF
+      tls:
+        insecure: false
+
+    debug: {}
+
+  service:
+    extensions: [health_check]
+
+    pipelines:
+
+      metrics:
+        receivers: [otlp]
+        processors: [memory_limiter, batch]
+        exporters: [prometheusremotewrite, otlp/signoz]
+
+      traces:
+        receivers: [otlp]
+        processors: [memory_limiter, batch]
+        exporters: [otlp/signoz]
+
+      logs:
+        receivers: [otlp]
+        processors: [memory_limiter, batch]
+        exporters: [otlp/signoz]
