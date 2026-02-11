@@ -1,15 +1,14 @@
 certmanager:
   enabled: true
   issuer:
-    # Set this to your company email.
-    email: fazelshah1@gmail.com
-    # Set this to true once staging certificates are issued successfully.
-    # Otherwise you may run into rate-limiting issues.
-    production: true
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+
 ingress:
   enabled: true
   enableHttps: true
-  hostname: devlake-0.example.com
+  hostname: devlake-0.fazelshah.fun
   className: nginx
   httpsPort: 8443
   tlsSecretName: ssl-certificate
+  pathType: ImplementationSpecific
