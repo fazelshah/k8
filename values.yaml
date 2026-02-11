@@ -8,15 +8,8 @@ certmanager:
     production: true
 ingress:
   enabled: true
-
-  ingressClassName: nginx
-
-  annotations:
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    kubernetes.io/ingress.class: nginx
-
-  hosts:
-    - devlake.example.com
-
-  path: /
-  pathType: ImplementationSpecific
+  enableHttps: true
+  hostname: devlake-0.example.com
+  className: nginx
+  httpsPort: 8443
+  tlsSecretName: ssl-certificate
