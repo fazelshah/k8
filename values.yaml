@@ -1,16 +1,22 @@
 certmanager:
-  enabled: false   # 🔥 disable cert-manager
+  enabled: false
 
-ingress:
-  enabled: true
-  hostname: devlake.fazelshah.fun
-  className: alb
-  pathType: Prefix
+ui:
+  service:
+    type: ClusterIP
 
-  annotations:
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
-    alb.ingress.kubernetes.io/ssl-redirect: '443'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:330101109473:certificate/27ce8fb1-c67a-4cda-8e8f-98980e0b178c
-    alb.ingress.kubernetes.io/group.name: monitoring
+  ingress:
+    enabled: true
+    className: alb
+    hosts:
+      - host: devlake.fazelshah.fun
+        paths:
+          - path: /
+            pathType: Prefix
+
+    annotations:
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/target-type: ip
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:330101109473:certificate/27ce8fb1-c67a-4cda-8e8f-98980e0b178c
