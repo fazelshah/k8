@@ -1,14 +1,15 @@
 certmanager:
-  enabled: true
-  issuer:
-    name: letsencrypt-prod
-    kind: ClusterIssuer
+  enabled: false   # 🔥 disable cert-manager
 
 ingress:
   enabled: true
-  enableHttps: true
-  hostname: devlake-0.fazelshah.fun
-  className: nginx
-  httpsPort: 8443
-  tlsSecretName: ssl-certificate
-  pathType: ImplementationSpecific
+  hostname: devlake.fazelshah.fun
+  className: alb
+  pathType: Prefix
+
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:330101109473:certificate/27ce8fb1-c67a-4cda-8e8f-98980e0b178c
