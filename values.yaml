@@ -1,11 +1,10 @@
-service:
-  type: ClusterIP
+
 
 ingress:
   enabled: true
-  useDefaultNginx: false   # 🔥 THIS IS CRITICAL
+  useDefaultNginx: false   
   className: alb
-  hostname: devlake.fazelshah.fun
+  hosts: devlake.fazelshah.fun
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
