@@ -1,18 +1,13 @@
-ui:
-  service:
-    type: ClusterIP
+service:
+  type: ClusterIP
 
-  ingress:
-    enabled: true
-    annotations:
-      kubernetes.io/ingress.class: alb
-      alb.ingress.kubernetes.io/scheme: internet-facing
-      alb.ingress.kubernetes.io/target-type: ip
-      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
-      alb.ingress.kubernetes.io/ssl-redirect: '443'
-      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:330101109473:certificate/27ce8fb1-c67a-4cda-8e8f-98980e0b178c
-    hosts:
-      - host: devlake.fazelshah.fun
-        paths:
-          - path: /
-            pathType: Prefix
+ingress:
+  enabled: true
+  className: alb
+  hostname: devlake.fazelshah.fun
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:330101109473:certificate/27ce8fb1-c67a-4cda-8e8f-98980e0b178c
