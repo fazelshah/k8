@@ -3,6 +3,7 @@ service:
 
 ingress:
   enabled: true
+  useDefaultNginx: false   # 🔥 THIS IS CRITICAL
   className: alb
   hostname: devlake.fazelshah.fun
   annotations:
