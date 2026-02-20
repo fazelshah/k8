@@ -1,22 +1,17 @@
-certmanager:
-  enabled: false
-
 ui:
-  service:
-    type: ClusterIP
-
   ingress:
     enabled: true
-    className: alb
-    hosts:
-      - host: devlake.fazelshah.fun
-        paths:
-          - path: /
-            pathType: Prefix
-
+    # Important: We use the annotation here to ensure it picks up the ALB class
     annotations:
+      kubernetes.io/ingress.class: alb
+      #alb.ingress.kubernetes.io/group.name: my-shared-tools  # MUST MATCH GRAFANA
       alb.ingress.kubernetes.io/scheme: internet-facing
       alb.ingress.kubernetes.io/target-type: ip
       alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
       alb.ingress.kubernetes.io/ssl-redirect: '443'
       alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:330101109473:certificate/27ce8fb1-c67a-4cda-8e8f-98980e0b178c
+    hosts:
+      - host: devlake.fazelshah.fun
+        paths:
+          - path: /
+            pathType: Prefix
