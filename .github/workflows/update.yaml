@@ -1,0 +1,39 @@
+name: Create EKS Cluster
+
+on:
+  workflow_dispatch:
+    inputs:
+      awsRegion: 
+        description: "AWS Region"
+        required: true
+        type: choice
+        options:
+        - ap-south-1
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_EKS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_EKS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      
+
+      - name: Install eksctl
+        run: |
+          curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C ./
+          chmod +x eksctl
+
+      - name: Create EKS cluster in ap-south-1
+        if: github.event.inputs.awsRegion == 'ap-south-1'
+        run: ./eksctl create cluster -f create-cluster.yaml
+

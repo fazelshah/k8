@@ -24,7 +24,12 @@ iam:
         name: aws-load-balancer-controller
         namespace: kube-system
       wellKnownPolicies:
-        awsLoadBalancerController: true        
+        awsLoadBalancerController: true  
+    - metadata:
+        name: cloudwatch-agent
+        namespace: amazon-cloudwatch
+      attachPolicyARNs:
+        - "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"      
 managedNodeGroups:
   - name: ng-1
     instanceType: t2.medium
@@ -52,3 +57,14 @@ addons:
   - name: metrics-server
     resolveConflicts: overwrite
   - name: eks-pod-identity-agent
+  - name: amazon-cloudwatch-observability
+    configurationValues: |
+      agent:
+        config:
+          logs:
+            metrics_collected:
+              kubernetes:
+                enhanced_container_insights: false
+                metrics_collection_interval: 60
+      container_logs:
+        enabled: false
