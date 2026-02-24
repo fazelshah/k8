@@ -66,5 +66,5 @@ addons:
               kubernetes:
                 enhanced_container_insights: false
                 metrics_collection_interval: 60
-      container_logs:
+      containerLogs:
         enabled: false
