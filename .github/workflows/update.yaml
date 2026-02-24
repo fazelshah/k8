@@ -36,6 +36,6 @@ jobs:
       - name: Create EKS cluster in ap-south-1
         if: github.event.inputs.awsRegion == 'ap-south-1'
         run: |
-           ./eksctl create iamserviceaccount -f create-cluster.yaml --approve
+           
            ./eksctl create addon -f create-cluster.yaml
 
