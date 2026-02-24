@@ -1,4 +1,4 @@
-name: Create EKS Cluster
+name: upgrade EKS Cluster
 
 on:
   workflow_dispatch:
@@ -35,5 +35,5 @@ jobs:
 
       - name: Create EKS cluster in ap-south-1
         if: github.event.inputs.awsRegion == 'ap-south-1'
-        run: ./eksctl create cluster -f create-cluster.yaml
+        run: ./eksctl upgrade addon  -f create-cluster.yaml
 
