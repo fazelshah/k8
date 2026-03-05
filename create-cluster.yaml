@@ -70,6 +70,10 @@ addons:
         config:
           metrics:
             namespace: Custom/NodeMetrics
+            append_dimensions:
+             InstanceId: ${aws:InstanceId}
+             InstanceType: ${aws:InstanceType}
+             AutoScalingGroupName: ${aws:AutoScalingGroupName}
             metrics_collected:
               cpu:
                 measurement:
