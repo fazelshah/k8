@@ -13,7 +13,9 @@ addonsConfig:
 availabilityZones: ["ap-south-1a", "ap-south-1b"]
 
 vpc:
-  cidr: 192.169.0.0/16  #change to 192.168.0.0/16 in next deployment
+  cidr: 192.168.0.0/16
+
+kubernetesNetworkConfig:
   ipFamily: IPv6
   nat:
     gateway: Disable
