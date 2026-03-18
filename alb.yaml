@@ -21,4 +21,4 @@ metricsBindAddr: ""
 
 # defaultSSLPolicy specifies the default SSL policy to use for TLS/HTTPS listeners
 defaultSSLPolicy: ELBSecurityPolicy-2016-08
-alb.ingress.kubernetes.io/ip-address-type: dualstack
+
