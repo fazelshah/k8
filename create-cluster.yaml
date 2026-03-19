@@ -15,11 +15,11 @@ availabilityZones: ["ap-south-1a", "ap-south-1b"]
 vpc:
   cidr: 192.168.0.0/16
   nat:
-    gateway: Disable  
-   
+    gateway: Disable # Disables the $32/mo NAT Gateway
+  manageSharedNodeSecurityGroupRules: true
 
 kubernetesNetworkConfig:
-  ipFamily: IPv6       
+  ipFamily: IPv6 # Every pod gets a unique IPv6 address     
 
 iam:
   withOIDC: true
@@ -36,7 +36,7 @@ iam:
         - "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"      
 managedNodeGroups:
   - name: ng-1
-    instanceType: t2.medium
+    instanceType: t3.medium
     minSize: 3
     maxSize: 3
     desiredCapacity: 3
