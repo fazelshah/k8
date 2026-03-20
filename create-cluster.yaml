@@ -10,11 +10,8 @@ autoModeConfig:
 addonsConfig:
   autoApplyPodIdentityAssociations: true
 
-availabilityZones: ["ap-south-1a", "ap-south-1b"]
-
 vpc:
   id: vpc-0fd4990dae0cfdae1
-
   subnets:
     public:
       ap-south-1a:
