@@ -1,0 +1,54 @@
+name: newrelic Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      eksClusterName:
+        description: "EKS Cluster Name"
+        required: true
+        type: choice
+        options:
+        - k8-cluster
+      awsRegion: 
+        description: "AWS Region"
+        required: true
+        type: choice
+        options:
+        - ap-south-1
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_EKS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_EKS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ github.event.inputs.awsRegion }}
+
+      - name: Setup Kubeconfig for Amazon EKS Cluster
+        run: aws eks update-kubeconfig --name ${{ github.event.inputs.eksClusterName }}
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: "v3.19.2" # default is latest stable
+
+      - name: Deploy Helm chart
+        run: |
+          helm repo add newrelic https://helm-charts.newrelic.com
+          helm repo update
+          helm upgrade --install newrelic-bundle newrelic/nri-bundle --namespace newrelic --create-namespace \
+               --set global.licenseKey=Y86002AA745BBD3F923E5E14151905657E7A712B115B3E06B9B80492C513B81C2 \
+               --set clusterName=${{ github.event.inputs.eksClusterName }} \
+               --set region=${{ github.event.inputs.awsRegion }}
+               --set newrelic-infrastructure.enabled=true \
+               --set kube-state-metrics.enabled=true \
+               --set prometheus.enabled=false \
+               --set logging.enabled=false
