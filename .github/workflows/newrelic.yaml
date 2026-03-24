@@ -42,13 +42,13 @@ jobs:
 
       - name: Deploy Helm chart
         run: |
-          helm repo add newrelic https://helm-charts.newrelic.com
-          helm repo update
-          helm upgrade --install newrelic-bundle newrelic/nri-bundle --namespace newrelic --create-namespace \
-               --set global.licenseKey=Y86002AA745BBD3F923E5E14151905657E7A712B115B3E06B9B80492C513B81C2 \
-               --set clusterName=${{ github.event.inputs.eksClusterName }} \
-               --set region=${{ github.event.inputs.awsRegion }}
-               --set newrelic-infrastructure.enabled=true \
-               --set kube-state-metrics.enabled=true \
-               --set prometheus.enabled=false \
-               --set logging.enabled=false
+          helm upgrade --install newrelic-bundle newrelic/nri-bundle \
+           --namespace newrelic \
+           --create-namespace \
+           --set global.licenseKey=${{ secrets.NEW_RELIC_LICENSE_KEY }} \
+           --set global.cluster=${{ github.event.inputs.eksClusterName }} \
+           --set global.region=${{ github.event.inputs.awsRegion }} \
+           --set newrelic-infrastructure.enabled=true \
+           --set kube-state-metrics.enabled=true \
+           --set prometheus.enabled=false \
+           --set logging.enabled=false
