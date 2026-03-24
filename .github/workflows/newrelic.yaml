@@ -49,6 +49,7 @@ jobs:
            --create-namespace \
            --set global.licenseKey=${{ secrets.NEW_RELIC_LICENSE_KEY }} \
            --set global.cluster=${{ github.event.inputs.eksClusterName }} \
+           --set global.endpoint=https://infra-api.eu.newrelic.com
            --set global.region=${{ github.event.inputs.awsRegion }} \
            --set newrelic-infrastructure.enabled=true \
            --set kube-state-metrics.enabled=true \
