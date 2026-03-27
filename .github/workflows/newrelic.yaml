@@ -55,4 +55,5 @@ jobs:
            --set kube-state-metrics.enabled=true \
            --set prometheus.enabled=true \
            --set prometheus.lowDataMode=true \
-           --set logging.enabled=false
+           --set logging.enabled=false \
+           --set prometheus.config.kubernetes.kubelet.enabled=true 
