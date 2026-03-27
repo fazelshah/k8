@@ -54,6 +54,5 @@ jobs:
            --set newrelic-infrastructure.enabled=false \
            --set kube-state-metrics.enabled=true \
            --set prometheus.enabled=true \
-           --set logging.enabled=false \
-           --set kubelet.enabled=true
-           
+           --set prometheus.lowDataMode=true \
+           --set logging.enabled=false
