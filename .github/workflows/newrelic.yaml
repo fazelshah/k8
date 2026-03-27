@@ -53,5 +53,5 @@ jobs:
            --set global.region=${{ github.event.inputs.awsRegion }} \
            --set newrelic-infrastructure.enabled=false \
            --set kube-state-metrics.enabled=true \
-           --set prometheus.enabled=false \
+           --set prometheus.enabled=true \
            --set logging.enabled=false
