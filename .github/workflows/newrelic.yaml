@@ -51,7 +51,7 @@ jobs:
            --set global.cluster=${{ github.event.inputs.eksClusterName }} \
            --set global.endpoint=https://infra-api.eu.newrelic.com \
            --set global.region=${{ github.event.inputs.awsRegion }} \
-           --set newrelic-infrastructure.enabled=true \
+           --set newrelic-infrastructure.enabled=false \
            --set kube-state-metrics.enabled=true \
            --set prometheus.enabled=false \
            --set logging.enabled=false
