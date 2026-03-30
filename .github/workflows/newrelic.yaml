@@ -47,13 +47,19 @@ jobs:
           helm upgrade --install newrelic-bundle newrelic/nri-bundle \
            --namespace newrelic \
            --create-namespace \
-           --set global.licenseKey=${{ secrets.NEW_RELIC_LICENSE_KEY }} \
-           --set global.cluster=${{ github.event.inputs.eksClusterName }} \
+           --set global.licenseKey=${NEW_RELIC_LICENSE_KEY} \
+           --set global.cluster=${EKS_CLUSTER_NAME} \
            --set global.endpoint=https://infra-api.eu.newrelic.com \
-           --set global.region=${{ github.event.inputs.awsRegion }} \
            --set newrelic-infrastructure.enabled=false \
            --set kube-state-metrics.enabled=true \
            --set prometheus.enabled=true \
-           --set prometheus.lowDataMode=true \
+           --set prometheus.config.enabled=true \
            --set logging.enabled=false \
-           --set prometheus.config.kubernetes.kubelet.enabled=true 
+           --set prometheus.config.scrape_configs[0].job_name=kubelet \
+           --set prometheus.config.scrape_configs[0].kubernetes_sd_configs[0].role=node \
+           --set prometheus.config.scrape_configs[0].scheme=https \
+           --set prometheus.config.scrape_configs[0].tls_config.insecure_skip_verify=true \
+           --set prometheus.config.scrape_configs[0].metrics_path=/metrics/cadvisor \
+           --set prometheus.config.scrape_configs[0].metric_relabel_configs[0].source_labels[0]=__name__ \
+           --set prometheus.config.scrape_configs[0].metric_relabel_configs[0].regex="container_cpu_usage_seconds_total|container_memory_working_set_bytes|kube_pod_.*" \
+           --set prometheus.config.scrape_configs[0].metric_relabel_configs[0].action=keep
