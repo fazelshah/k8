@@ -49,9 +49,10 @@ jobs:
            --create-namespace \
            --set global.licenseKey=${{ secrets.NEW_RELIC_LICENSE_KEY }} \
            --set global.cluster=${{ github.event.inputs.eksClusterName }} \
-           --set newrelic-infrastructure.enabled=false \
-           --set kube-state-metrics.enabled=true \
+           --set newrelic-infrastructure.enabled=true \
+           --set newrelic-infrastructure.lowDataMode=true \
+           --set kube-state-metrics.enabled=false \
            --set logging.enabled=false \
-           --set prometheus.enabled=true \
-           --set prometheus.lowDataMode=true \
-           --set kubelet.enabled=true
+           --set prometheus.enabled=false \
+           --set kubelet.enabled=true \
+           --set newrelic-infrastructure.includeMetrics=container_cpu_usage_seconds_total,container_memory_working_set_bytes
