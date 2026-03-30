@@ -47,7 +47,7 @@ jobs:
           helm upgrade --install newrelic-bundle newrelic/nri-bundle \
            --namespace newrelic \
            --create-namespace \
-           --set global.licenseKey=${NEW_RELIC_LICENSE_KEY} \
+           --set global.licenseKey=${{ secrets.NEW_RELIC_LICENSE_KEY }} \
            --set global.cluster=${EKS_CLUSTER_NAME} \
            --set global.endpoint=https://infra-api.eu.newrelic.com \
            --set newrelic-infrastructure.enabled=false \
