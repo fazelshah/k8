@@ -55,4 +55,4 @@ jobs:
            --set logging.enabled=false \
            --set prometheus.enabled=false \
            --set kubelet.enabled=true \
-           --set newrelic-infrastructure.includeMetrics=container_cpu_usage_seconds_total,container_memory_working_set_bytes
+           --set newrelic-infrastructure.includeMetrics="container_cpu_usage_seconds_total,container_memory_working_set_bytes"
