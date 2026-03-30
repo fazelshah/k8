@@ -50,11 +50,15 @@ jobs:
            --set global.licenseKey=${{ secrets.NEW_RELIC_LICENSE_KEY }} \
            --set global.cluster=${{ github.event.inputs.eksClusterName }} \
            --set newrelic-infrastructure.enabled=true \
+           --set newrelic-infrastructure.lowDataMode=true \
            --set kube-state-metrics.enabled=false \
-           --set prometheus.enabled=false \
-           --set logging.enabled=false \
            --set nri-kubernetes.enabled=true \
+           --set nri-kubernetes.ksm.enabled=false \
+           --set nri-kubernetes.lowDataMode=true \
            --set nri-kubernetes.kubelet.enabled=true \
            --set nri-kubernetes.kubelet.insecureSkipVerify=true \
-           --set nri-kubernetes.kubelet.metricsPath=/metrics/cadvisor \
-           
+           --set prometheus.enabled=false \
+           --set logging.enabled=false \
+           --set nri-kubernetes.metrics.enabled=true \
+           --set nri-kubernetes.metrics.include[0]=k8s.container.cpuCoresUtilization \
+           --set nri-kubernetes.metrics.include[1]=k8s.container.memoryWorkingSetUtilization
