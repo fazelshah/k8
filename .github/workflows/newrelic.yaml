@@ -57,5 +57,4 @@ jobs:
            --set nri-kubernetes.kubelet.enabled=true \
            --set nri-kubernetes.kubelet.insecureSkipVerify=true \
            --set nri-kubernetes.kubelet.metricsPath=/metrics/cadvisor \
-           --set newrelic-infrastructure.includeMetrics[0]=container_cpu_usage_seconds_total \
-           --set newrelic-infrastructure.includeMetrics[1]=container_memory_working_set_bytes
+           
