@@ -42,6 +42,8 @@ jobs:
 
       - name: Deploy Helm chart
         run: |
+          helm repo add newrelic https://helm-charts.newrelic.com
+          helm repo update
           helm upgrade --install newrelic-bundle newrelic/nri-bundle \
            --namespace newrelic \
            --create-namespace \
