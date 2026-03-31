@@ -59,5 +59,4 @@ jobs:
            --set nri-kubernetes.kubelet.enabled=true \
            --set nri-kubernetes.kubelet.insecureSkipVerify=true \
            --set nri-kubernetes.metrics.enabled=true \
-           --set nri-kubernetes.metrics.include[0]=k8s.container.cpuCoresUtilization \
-           --set nri-kubernetes.metrics.include[1]=k8s.container.memoryWorkingSetUtilization
+           
