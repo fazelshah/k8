@@ -53,12 +53,12 @@ jobs:
            --set newrelic-infrastructure.lowDataMode=true \
            --set kube-state-metrics.enabled=false \
            --set nri-kubernetes.ksm.enabled=false \
+           --set nri-kubernetes.ksm.collect=false \
            --set nri-kubernetes.deployments.ksm.enabled=false \   
            --set prometheus.enabled=false \
            --set logging.enabled=false \
            --set nri-kubernetes.enabled=true \
            --set nri-kubernetes.lowDataMode=true \
            --set nri-kubernetes.kubelet.enabled=true \
-           --set nri-kubernetes.kubelet.insecureSkipVerify=true \
-           --set nri-kubernetes.metrics.enabled=true \
+           --set nri-kubernetes.kubelet.insecureSkipVerify=true 
            
