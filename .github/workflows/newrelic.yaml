@@ -46,9 +46,10 @@ jobs:
           helm repo update
           helm upgrade --install newrelic-bundle newrelic/nri-bundle \
            --namespace newrelic \
-           --create-namespace \
+           --create-namespace -f values.yaml \
            --set global.licenseKey=${{ secrets.NEW_RELIC_LICENSE_KEY }} \
            --set global.cluster=${{ github.event.inputs.eksClusterName }} \
+<<<<<<< HEAD
            --set newrelic-infrastructure.enabled=true \
            --set newrelic-infrastructure.lowDataMode=true \
            --set kube-state-metrics.enabled=false \
@@ -59,4 +60,6 @@ jobs:
            --set nri-kubernetes.lowDataMode=true \
            --set nri-kubernetes.kubelet.enabled=true \
            --set nri-kubernetes.kubelet.insecureSkipVerify=true 
+=======
+>>>>>>> f57efdc (chore: update values.yaml file for newrelic)
            
