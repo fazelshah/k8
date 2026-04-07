@@ -46,7 +46,7 @@ jobs:
           helm repo update
           helm upgrade --install newrelic-bundle newrelic/nri-bundle \
            --namespace newrelic \
-           --create-namespace -f values.yaml \
+           --create-namespace -f newrelic.yaml \
            --set global.licenseKey=${{ secrets.NEW_RELIC_LICENSE_KEY }} \
            --set global.cluster=${{ github.event.inputs.eksClusterName }} 
 
