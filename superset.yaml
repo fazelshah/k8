@@ -1,45 +1,21 @@
-supersetNode:
-  replicaCount: 1
-
-service:
-  type: ClusterIP
-
 ingress:
   enabled: true
   ingressClassName: alb
-
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
     alb.ingress.kubernetes.io/ssl-redirect: '443'
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:330101109473:certificate/27ce8fb1-c67a-4cda-8e8f-98980e0b178c
-
+    alb.ingress.kubernetes.io/healthcheck-path: /
+  path: /
+  pathType: Prefix
   hosts:
     - superset.fazelshah.fun
 
-  path: /
-  pathType: Prefix
-
-postgresql:
-  enabled: true
-  image:
-    registry: docker.io
-    repository: bitnami/postgresql
-    tag: 15.6.0-debian-12-r0   
-
-redis:
-  enabled: true
-  image:
-    registry: docker.io
-    repository: bitnami/redis
-    tag: 7.2.5-debian-12-r0   
-
-supersetWorker:
-  replicaCount: 1
-
-supersetCeleryBeat:
-  enabled: true
+configOverrides:
+  proxy_fix: |
+    ENABLE_PROXY_FIX = True
 
 init:
   loadExamples: true
@@ -50,3 +26,53 @@ init:
     lastname: Admin
     email: admin@example.com
     password: admin123
+
+postgresql:
+  enabled: true
+  auth:
+    username: superset
+    password: superset
+    database: superset
+
+  image:
+    repository: docker.io/bitnami/postgresql
+    tag: 16   # ✅ FIXED (no more broken tag)
+
+  primary:
+    persistence:
+      enabled: true
+      accessModes:
+        - ReadWriteOnce
+    service:
+      ports:
+        postgresql: "5432"
+
+redis:
+  enabled: true
+  architecture: standalone
+
+  auth:
+    enabled: false
+
+  master:
+    image:
+      repository: docker.io/bitnami/redis
+      tag: 7.2   # ✅ FIXED (no more broken tag)
+
+    persistence:
+      enabled: false
+      accessModes:
+        - ReadWriteOnce
+
+supersetNode:
+  replicas:
+    enabled: true
+    replicaCount: 1
+
+supersetWorker:
+  replicas:
+    enabled: true
+    replicaCount: 1
+
+supersetCeleryBeat:
+  enabled: true
