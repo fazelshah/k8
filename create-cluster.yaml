@@ -27,11 +27,7 @@ iam:
         namespace: kube-system
       wellKnownPolicies:
         awsLoadBalancerController: true  
-    - metadata:
-        name: cloudwatch-agent
-        namespace: amazon-cloudwatch
-      attachPolicyARNs:
-        - "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"      
+         
 managedNodeGroups:
   - name: ng-1
     instanceType: t3.medium
