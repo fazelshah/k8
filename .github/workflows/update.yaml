@@ -40,4 +40,5 @@ jobs:
             --region ap-south-1 \
             --cluster k8-cluster \
             --public-access=false \
-            --private-access=true
+            --private-access=true \
+            --approve
