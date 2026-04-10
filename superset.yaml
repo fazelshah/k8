@@ -35,16 +35,20 @@ postgresql:
     database: superset
 
   image:
-    repository: bitnami/postgresql   # ✅ FIXED
-    tag: 16
+    repository: bitnami/postgresql
+    tag: 16.1.0-debian-12-r0   # ✅ REAL tag
 
 redis:
   enabled: true
+  architecture: standalone
+
+  auth:
+    enabled: false
 
   master:
     image:
-      repository: bitnami/redis      # ✅ FIXED
-      tag: 7.2
+      repository: bitnami/redis
+      tag: 7.2.5-debian-12-r0  # ✅ REAL tag
 
 supersetNode:
   replicas:
