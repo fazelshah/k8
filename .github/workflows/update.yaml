@@ -36,6 +36,10 @@ jobs:
       - name: Create EKS cluster in ap-south-1
         if: github.event.inputs.awsRegion == 'ap-south-1'
         run: |
-          eksctl utils update-cluster-endpoints -f create-cluster.yaml --approve
+          eksctl utils update-cluster-endpoints \
+           --region ap-south-1 \
+           --cluster k8-cluster \
+           --public-access=false \
+           --private-access=true
            
 
