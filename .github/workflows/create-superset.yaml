@@ -44,6 +44,6 @@ jobs:
         run: |
           helm repo add superset https://apache.github.io/superset
           helm repo update
-          helm upgrade --install  --values superset-values.yaml superset superset/superset -n superset --create-namespace \
+          helm upgrade --install  --values superset.yaml superset superset/superset -n superset --create-namespace \
                --set clusterName=${{ github.event.inputs.eksClusterName }} \
                --set region=${{ github.event.inputs.awsRegion }}
