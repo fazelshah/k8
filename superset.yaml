@@ -35,34 +35,16 @@ postgresql:
     database: superset
 
   image:
-    repository: docker.io/bitnami/postgresql
-    tag: 16   # ✅ FIXED (no more broken tag)
-
-  primary:
-    persistence:
-      enabled: true
-      accessModes:
-        - ReadWriteOnce
-    service:
-      ports:
-        postgresql: "5432"
+    repository: bitnami/postgresql   # ✅ FIXED
+    tag: 16
 
 redis:
   enabled: true
-  architecture: standalone
-
-  auth:
-    enabled: false
 
   master:
     image:
-      repository: docker.io/bitnami/redis
-      tag: 7.2   # ✅ FIXED (no more broken tag)
-
-    persistence:
-      enabled: false
-      accessModes:
-        - ReadWriteOnce
+      repository: bitnami/redis      # ✅ FIXED
+      tag: 7.2
 
 supersetNode:
   replicas:
