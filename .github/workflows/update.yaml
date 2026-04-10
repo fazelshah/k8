@@ -39,6 +39,6 @@ jobs:
           eksctl utils update-cluster-endpoints \
             --region ap-south-1 \
             --cluster k8-cluster \
-            --public-access=false \
+            --public-access=true \
             --private-access=true \
             --approve
