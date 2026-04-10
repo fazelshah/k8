@@ -1,0 +1,43 @@
+supersetNode:
+  replicaCount: 1
+
+service:
+  type: ClusterIP
+
+ingress:
+  enabled: true
+  ingressClassName: alb
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:330101109473:certificate/27ce8fb1-c67a-4cda-8e8f-98980e0b178c
+
+  hosts:
+    - host: superset.fazelshah.fun
+      paths:
+        - path: /
+          pathType: Prefix
+
+postgresql:
+  enabled: true
+
+redis:
+  enabled: true
+
+supersetWorker:
+  replicaCount: 1
+
+supersetCeleryBeat:
+  enabled: true
+
+init:
+  loadExamples: true
+  createAdmin: true
+  adminUser:
+    username: admin
+    firstname: Superset
+    lastname: Admin
+    email: admin@example.com
+    password: admin123
