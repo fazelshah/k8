@@ -7,6 +7,7 @@ service:
 ingress:
   enabled: true
   ingressClassName: alb
+
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
@@ -15,10 +16,10 @@ ingress:
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:330101109473:certificate/27ce8fb1-c67a-4cda-8e8f-98980e0b178c
 
   hosts:
-    - host: superset.fazelshah.fun
-      paths:
-        - path: /
-          pathType: Prefix
+    - superset.fazelshah.fun
+
+  path: /
+  pathType: Prefix
 
 postgresql:
   enabled: true
