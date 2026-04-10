@@ -1,4 +1,4 @@
-name: upgrade EKS Cluster
+name: Update EKS Endpoint Access
 
 on:
   workflow_dispatch:
@@ -8,11 +8,11 @@ on:
         required: true
         type: choice
         options:
-        - ap-south-1
+          - ap-south-1
 
 jobs:
   deploy:
-    name: Deploy
+    name: Update Endpoint
     runs-on: ubuntu-latest
 
     steps:
@@ -26,22 +26,18 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_EKS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
 
-      
-
       - name: Install eksctl
         run: |
           curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" \
           | tar xz -C /tmp
-           sudo mv /tmp/eksctl /usr/local/bin
-           eksctl version
+          sudo mv /tmp/eksctl /usr/local/bin
+          eksctl version
 
-      - name: Create EKS cluster in ap-south-1
+      - name: Disable public access for EKS
         if: github.event.inputs.awsRegion == 'ap-south-1'
         run: |
           eksctl utils update-cluster-endpoints \
-          --region ap-south-1 \
-          --cluster k8-cluster \
-          --public-access=false \
-          --private-access=true
-           
-
+            --region ap-south-1 \
+            --cluster k8-cluster \
+            --public-access=false \
+            --private-access=true
