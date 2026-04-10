@@ -12,7 +12,7 @@ addonsConfig:
 
 vpc:
   clusterEndpoints:
-    publicAccess: true
+    publicAccess: false
     privateAccess: true
   cidr: 192.169.0.0/16  #change to 192.168.0.0/16 in next deployment
   nat:
