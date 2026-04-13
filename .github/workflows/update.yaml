@@ -39,6 +39,7 @@ jobs:
           eksctl utils update-cluster-vpc-config \
           --region ap-south-1 \
           --cluster k8-cluster \
-          --public-access=false \
+          --public-access=true \
           --private-access=true \
+          --public-access-cidrs=3.110.133.139/32 \
           --approve
