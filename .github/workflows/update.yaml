@@ -36,9 +36,9 @@ jobs:
       - name: Disable public access for EKS
         if: github.event.inputs.awsRegion == 'ap-south-1'
         run: |
-          eksctl utils update-cluster-endpoints \
-            --region ap-south-1 \
-            --cluster k8-cluster \
-            --public-access=true \
-            --private-access=true \
-            --approve
+          eksctl utils update-cluster-vpc-config \
+          --region ap-south-1 \
+          --cluster k8-cluster \
+          --public-access=false \
+          --private-access=true \
+          --approve
