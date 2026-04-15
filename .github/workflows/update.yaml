@@ -41,5 +41,5 @@ jobs:
           --cluster k8-cluster \
           --public-access=true \
           --private-access=true \
-          --public-access-cidrs=13.234.226.109/32,65.2.184.224/32 \
+          --public-access-cidrs=13.234.226.109/32 \
           --approve
