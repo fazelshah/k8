@@ -6,7 +6,23 @@ newrelic-infrastructure:
   lowDataMode: true
   config:
     enable_process_metrics: false
+  common:
 
+    config:
+
+      namespaceSelector:
+
+        matchExpressions:
+
+          - key: kubernetes.io/metadata.name
+
+            operator: In
+
+            values:
+
+              - monitoring
+
+              - prod
 # Core Kubernetes integration (ONLY what we need)
 nri-kubernetes:
   enabled: true
