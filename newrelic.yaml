@@ -1,26 +1,19 @@
-
-
 # Keep infra agent but reduce noise
 newrelic-infrastructure:
   enabled: true
   lowDataMode: true
   config:
     enable_process_metrics: false
+
   common:
-
     config:
-
       namespaceSelector:
-
         matchExpressions:
-
           - key: kubernetes.io/metadata.name
-
             operator: In
-
             values:
-
               - monitoring
+
 # Core Kubernetes integration (ONLY what we need)
 nri-kubernetes:
   enabled: true
@@ -30,30 +23,26 @@ nri-kubernetes:
     enabled: true
     insecureSkipVerify: true
 
-  # 🔥 Limit to only required metrics
   metrics:
     enabled: true
     include:
       - k8s.container.cpuCoresUtilization
       - k8s.container.memoryWorkingSetUtilization
 
-# Disable everything else (cost heavy)
+# ✅ ENABLE THIS (fix)
 kube-state-metrics:
-  enabled: false
+  enabled: true
 
+# ❌ keep rest disabled
 ksm:
   enabled: false
-
 controlPlane:
   enabled: false
-
 prometheus:
   enabled: false
-
 logging:
   enabled: false
 
-# Reduce scrape frequency (less data = less cost)
 common:
   config:
     interval: 30s
