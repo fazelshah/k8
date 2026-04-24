@@ -25,9 +25,7 @@ nri-kubernetes:
 
   metrics:
     enabled: true
-    include:
-      - k8s.container.cpuCoresUtilization
-      - k8s.container.memoryWorkingSetUtilization
+    
 
 # ✅ ENABLE THIS (fix)
 kube-state-metrics:
@@ -35,7 +33,7 @@ kube-state-metrics:
 
 # ❌ keep rest disabled
 ksm:
-  enabled: false
+  enabled: true
 controlPlane:
   enabled: false
 prometheus:
