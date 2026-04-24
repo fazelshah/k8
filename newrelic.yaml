@@ -21,8 +21,6 @@ newrelic-infrastructure:
             values:
 
               - monitoring
-
-              - prod
 # Core Kubernetes integration (ONLY what we need)
 nri-kubernetes:
   enabled: true
