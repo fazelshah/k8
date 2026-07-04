@@ -1,0 +1,80 @@
+image:
+  registry: docker.io
+  repository: bitnamilegacy/discourse
+  
+
+
+auth:
+  username: "fazelshah"
+  email: "fazelshah1@gmail.com"
+  password: ""
+
+host: forums.fazelshah.fun
+siteName: "fazel Forums"
+
+service:
+  type: ClusterIP
+  ports:
+    http: 80
+
+ingress:
+  enabled: true
+  ingressClassName: alb
+  hostname: forums.fazelshah.fun
+  path: /
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:330101109473:certificate/27ce8fb1-c67a-4cda-8e8f-98980e0b178c
+    alb.ingress.kubernetes.io/ip-address-type: dualstack
+    
+discourse:
+  resourcesPreset: "none"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi 
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+sidekiq:
+  resourcesPreset: "none"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      cpu: 250m
+      memory: 512Mi
+
+smtp:
+  enabled: true
+  host: email-smtp.ap-south-1.amazonaws.com
+  port: 587
+  user: ""
+  password: ""
+  from_address: "noreply+discourse@cryptlex.co"
+  protocol: tls
+  auth: login
+
+postgresql:
+  enabled: true
+
+
+  
+redis:
+  enabled: true
+  auth:
+    enabled: false
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/redis
+    tag: "7.4.2"
+
+persistence:
+  enabled: true
+  storageClass: gp2
+  size: 20Gi

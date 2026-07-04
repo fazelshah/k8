@@ -1,0 +1,42 @@
+name: Discourse Deployment
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_EKS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_EKS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Setup Kubeconfig for Amazon EKS Cluster
+        run: aws eks update-kubeconfig --name ${{ vars.APM_EKS_CLUSTER_NAME }}
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: "v3.19.2"
+
+      - name: Deploy Discourse Helm chart
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm repo update
+          helm upgrade --install discourse bitnami/discourse \
+            --atomic \
+            --create-namespace \
+            --namespace discourse \
+            --values .discourse.yaml \
+            
+            --set smtp.user="${{ secrets.SMTP_SES_USERNAME }}" \
+            --set smtp.password="${{ secrets.SMTP_SES_PASSWORD }}" \
+            
