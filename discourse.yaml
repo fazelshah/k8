@@ -31,24 +31,22 @@ ingress:
     alb.ingress.kubernetes.io/ip-address-type: dualstack
     
 discourse:
-  resourcesPreset: "none"
   resources:
     requests:
-      cpu: 100m
-      memory: 512Mi 
-    limits:
       cpu: 500m
       memory: 1Gi
+    limits:
+      cpu: 1500m
+      memory: 1500Mi
 
 sidekiq:
-  resourcesPreset: "none"
   resources:
     requests:
-      cpu: 50m
-      memory: 256Mi
+      cpu: 500m
+      memory: 768Mi
     limits:
-      cpu: 250m
-      memory: 512Mi
+      cpu: 1500m
+      memory: 1536Mi
 
 smtp:
   enabled: true
