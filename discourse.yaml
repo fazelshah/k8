@@ -62,6 +62,10 @@ smtp:
 
 postgresql:
   enabled: true
+  postgresPassword: "StrongPostgresPassword123!"
+  username: bn_discourse
+  password: "StrongPostgresPassword123!"
+  database: bitnami_application
   image:
    registry: docker.io
    repository: bitnamilegacy/postgresql
