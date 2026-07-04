@@ -48,7 +48,7 @@ jobs:
             --atomic \
             --create-namespace \
             --namespace discourse \
-            --values .discourse.yaml \
+            --values  discourse.yaml \
             
             --set smtp.user="${{ secrets.SMTP_SES_USERNAME }}" \
             --set smtp.password="${{ secrets.SMTP_SES_PASSWORD }}" \
