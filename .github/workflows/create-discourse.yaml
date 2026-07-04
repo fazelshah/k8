@@ -2,30 +2,43 @@ name: Discourse Deployment
 
 on:
   workflow_dispatch:
+    inputs:
+      eksClusterName:
+        description: "EKS Cluster Name"
+        required: true
+        type: choice
+        options:
+        - k8-cluster
+      awsRegion: 
+        description: "AWS Region"
+        required: true
+        type: choice
+        options:
+        - ap-south-1
 
 jobs:
   deploy:
     name: Deploy
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_EKS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_EKS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: ${{ github.event.inputs.awsRegion }}
 
       - name: Setup Kubeconfig for Amazon EKS Cluster
-        run: aws eks update-kubeconfig --name ${{ vars.APM_EKS_CLUSTER_NAME }}
+        run: aws eks update-kubeconfig --name ${{ github.event.inputs.eksClusterName }}
 
       - name: Setup Helm
         uses: azure/setup-helm@v4
         with:
-          version: "v3.19.2"
+          version: "v3.19.2" # default is latest stable
 
       - name: Deploy Discourse Helm chart
         run: |
