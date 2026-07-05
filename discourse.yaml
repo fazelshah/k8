@@ -33,20 +33,20 @@ ingress:
 discourse:
   resources:
     requests:
-      cpu: 500m
-      memory: 1Gi
+      cpu: 1000m
+      memory: 2Gi
     limits:
-      cpu: 1500m
-      memory: 1500Mi
+      cpu: 3000m
+      memory: 4Gi
 
 sidekiq:
   resources:
     requests:
       cpu: 500m
-      memory: 768Mi
+      memory: 1Gi
     limits:
-      cpu: 1500m
-      memory: 1536Mi
+      cpu: 2000m
+      memory: 2Gi
 
 smtp:
   enabled: true

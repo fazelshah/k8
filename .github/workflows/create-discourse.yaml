@@ -49,7 +49,7 @@ jobs:
             --create-namespace \
             --namespace discourse \
             --values  discourse.yaml \
-            --timeout 30m \
+            --timeout 10m \
             
             --set smtp.user="${{ secrets.SMTP_SES_USERNAME }}" \
             --set smtp.password="${{ secrets.SMTP_SES_PASSWORD }}" \
