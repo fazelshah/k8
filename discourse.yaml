@@ -1,7 +1,7 @@
 image:
   registry: docker.io
-  repository: bitnamilegacy/discourse
-  
+  repository: discourse/discourse
+  tag: "2026.1.5"
 
 
 auth:
@@ -22,6 +22,7 @@ ingress:
   ingressClassName: alb
   hostname: forums.fazelshah.fun
   path: /
+  pathType: Prefix
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
@@ -31,22 +32,26 @@ ingress:
     alb.ingress.kubernetes.io/ip-address-type: ipv4
     
 discourse:
+  resourcesPreset: "none"
   resources:
-    requests:
-      cpu: 500m
-      memory: 1Gi
-    limits:
-      cpu: 2
-      memory: 2500Mi
-
-sidekiq:
-  resources:
+    resources:
     requests:
       cpu: 250m
+      memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 4Gi
+  
+
+sidekiq:
+  resourcesPreset: "none"
+  resources:
+    requests:
+      cpu: 100m
       memory: 512Mi
     limits:
-      cpu: 1
-      memory: 1Gi
+      cpu: 500m
+      memory: 2Gi
 
 smtp:
   enabled: true
@@ -69,8 +74,8 @@ postgresql:
 
   image:
     registry: docker.io
-    repository: bitnamilegacy/postgresql
-    tag: 17.6.0-debian-12-r0
+    repository: postgresql
+    tag: "17.10"
 
 
   
@@ -80,7 +85,7 @@ redis:
     enabled: false
   image:
     registry: docker.io
-    repository: bitnamilegacy/redis
+    repository: redis
     tag: "7.4.2"
 
 persistence:
