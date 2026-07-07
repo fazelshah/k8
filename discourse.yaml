@@ -77,6 +77,7 @@ postgresql:
   image:
     registry: docker.io
     repository: postgresql
+    tag: "17.6"
 
 
   
