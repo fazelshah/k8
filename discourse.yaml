@@ -1,13 +1,7 @@
 image:
   registry: docker.io
   repository: discourse/discourse
-<<<<<<< HEAD
   tag: "2026.1.5"
-=======
-  tag:2026.1.5
-  
->>>>>>> 18f23b753fd2776bba17504b587dc778faf50d6c
-
 
 auth:
   username: "fazelshah"
@@ -80,11 +74,6 @@ postgresql:
   image:
     registry: docker.io
     repository: postgresql
-<<<<<<< HEAD
-    tag: "17.10"
-=======
-    tag: 17
->>>>>>> 18f23b753fd2776bba17504b587dc778faf50d6c
 
 
   
