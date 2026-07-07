@@ -53,4 +53,5 @@ jobs:
             
             --set smtp.user="${{ secrets.SMTP_SES_USERNAME }}" \
             --set smtp.password="${{ secrets.SMTP_SES_PASSWORD }}" \
+            --set global.security.allowInsecureImages=true
             
