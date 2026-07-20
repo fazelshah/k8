@@ -1,5 +1,4 @@
 name: newrelic Deployment
-
 on:
   workflow_dispatch:
     inputs:
@@ -9,18 +8,16 @@ on:
         type: choice
         options:
         - k8-cluster
-      awsRegion: 
+      awsRegion:
         description: "AWS Region"
         required: true
         type: choice
         options:
         - ap-south-1
-
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -38,16 +35,42 @@ jobs:
       - name: Setup Helm
         uses: azure/setup-helm@v4
         with:
-          version: "v3.19.2" # default is latest stable
+          version: "v3.19.2"
+
+      - name: Install kubeseal
+        run: |
+          KUBESEAL_VERSION=0.27.3
+          curl -sSL -o kubeseal.tar.gz \
+            "https://github.com/bitnami-labs/sealed-secrets/releases/download/v${KUBESEAL_VERSION}/kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz"
+          tar -xzf kubeseal.tar.gz kubeseal
+          sudo install -m 755 kubeseal /usr/local/bin/kubeseal
+          rm kubeseal.tar.gz
+
+      - name: Create newrelic namespace
+        run: kubectl get namespace newrelic || kubectl create namespace newrelic
+
+      - name: Seal and apply New Relic license secret
+        run: |
+          set -e
+          kubectl create secret generic newrelic-license -n newrelic \
+            --from-literal=licenseKey="${{ secrets.NEW_RELIC_LICENSE_KEY }}" \
+            --dry-run=client -o yaml | \
+          kubeseal --format=yaml \
+            --controller-name=sealed-secrets-controller \
+            --controller-namespace=kube-system | \
+          kubectl apply -f -
+
+      - name: Wait for Secret to be decrypted
+        run: |
+          kubectl wait --for=jsonpath='{.data}' secret/newrelic-license -n newrelic --timeout=60s
 
       - name: Deploy Helm chart
         run: |
           helm repo add newrelic https://helm-charts.newrelic.com
           helm repo update
           helm upgrade --install newrelic-bundle newrelic/nri-bundle \
-           --namespace newrelic \
-           --create-namespace -f newrelic.yaml \
-           --set global.licenseKey=${{ secrets.NEW_RELIC_LICENSE_KEY }} \
-           --set global.cluster=${{ github.event.inputs.eksClusterName }} 
-
-           
+            --namespace newrelic \
+            --create-namespace \
+            -f newrelic.yaml \
+            --set global.cluster=${{ github.event.inputs.eksClusterName }} \
+            --timeout 10m
