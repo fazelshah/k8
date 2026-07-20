@@ -1,5 +1,4 @@
 name: Discourse Deployment
-
 on:
   workflow_dispatch:
     inputs:
@@ -9,7 +8,7 @@ on:
         type: choice
         options:
         - k8-cluster
-      awsRegion: 
+      awsRegion:
         description: "AWS Region"
         required: true
         type: choice
@@ -20,7 +19,6 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-22.04
-
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -38,7 +36,54 @@ jobs:
       - name: Setup Helm
         uses: azure/setup-helm@v4
         with:
-          version: "v3.19.2" # default is latest stable
+          version: "v3.19.2"
+
+      - name: Install kubeseal
+        run: |
+          KUBESEAL_VERSION=0.27.3
+          curl -sSL -o kubeseal.tar.gz \
+            "https://github.com/bitnami-labs/sealed-secrets/releases/download/v${KUBESEAL_VERSION}/kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz"
+          tar -xzf kubeseal.tar.gz kubeseal
+          sudo install -m 755 kubeseal /usr/local/bin/kubeseal
+          rm kubeseal.tar.gz
+
+      - name: Create discourse namespace
+        run: kubectl get namespace discourse || kubectl create namespace discourse
+
+      - name: Seal and apply Discourse secrets
+        run: |
+          set -e
+
+          kubectl create secret generic discourse-auth -n discourse \
+            --from-literal=discourse-password="${{ secrets.DISCOURSE_ADMIN_PASSWORD }}" \
+            --dry-run=client -o yaml | \
+          kubeseal --format=yaml \
+            --controller-name=sealed-secrets-controller \
+            --controller-namespace=kube-system | \
+          kubectl apply -f -
+
+          kubectl create secret generic discourse-smtp -n discourse \
+            --from-literal=smtp-password="${{ secrets.SMTP_SES_PASSWORD }}" \
+            --dry-run=client -o yaml | \
+          kubeseal --format=yaml \
+            --controller-name=sealed-secrets-controller \
+            --controller-namespace=kube-system | \
+          kubectl apply -f -
+
+          kubectl create secret generic discourse-postgresql -n discourse \
+            --from-literal=postgres-password="${{ secrets.POSTGRES_ADMIN_PASSWORD }}" \
+            --from-literal=password="${{ secrets.POSTGRES_USER_PASSWORD }}" \
+            --dry-run=client -o yaml | \
+          kubeseal --format=yaml \
+            --controller-name=sealed-secrets-controller \
+            --controller-namespace=kube-system | \
+          kubectl apply -f -
+
+      - name: Wait for Secrets to be decrypted
+        run: |
+          kubectl wait --for=jsonpath='{.data}' secret/discourse-auth -n discourse --timeout=60s
+          kubectl wait --for=jsonpath='{.data}' secret/discourse-smtp -n discourse --timeout=60s
+          kubectl wait --for=jsonpath='{.data}' secret/discourse-postgresql -n discourse --timeout=60s
 
       - name: Deploy Discourse Helm chart
         run: |
@@ -48,10 +93,6 @@ jobs:
             --atomic \
             --create-namespace \
             --namespace discourse \
-            --values  discourse.yaml \
+            --values discourse.yaml \
             --timeout 10m \
-            
-            --set smtp.user="${{ secrets.SMTP_SES_USERNAME }}" \
-            --set smtp.password="${{ secrets.SMTP_SES_PASSWORD }}" \
-            --set global.security.allowInsecureImages=true
-            
+            --set smtp.user="${{ secrets.SMTP_SES_USERNAME }}"
