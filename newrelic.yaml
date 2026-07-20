@@ -1,10 +1,13 @@
+global:
+  customSecretName: "newrelic-license"
+  customSecretLicenseKey: "licenseKey"
+
 # Keep infra agent but reduce noise
 newrelic-infrastructure:
   enabled: true
   lowDataMode: true
   config:
     enable_process_metrics: false
-
   common:
     config:
       namespaceSelector:
@@ -18,19 +21,15 @@ newrelic-infrastructure:
 nri-kubernetes:
   enabled: true
   lowDataMode: true
-
   kubelet:
     enabled: true
     insecureSkipVerify: true
-
   metrics:
     enabled: true
-    
 
 # ✅ ENABLE THIS (fix)
 kube-state-metrics:
   enabled: true
-
 # ❌ keep rest disabled
 ksm:
   enabled: true
@@ -40,9 +39,7 @@ prometheus:
   enabled: false
 logging:
   enabled: false
-
 common:
   config:
     interval: 30s
-
 lowDataMode: true
