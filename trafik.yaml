@@ -5,7 +5,11 @@ service:
   enabled: true
   type: LoadBalancer
   externalTrafficPolicy: Local
-  annotations: {}
+
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "external"
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
 
 providers:
   kubernetesIngress:
@@ -18,7 +22,20 @@ ports:
   web:
     expose:
       default: true
+    port: 80
+    exposedPort: 80
 
   websecure:
     expose:
       default: true
+    port: 443
+    exposedPort: 443
+    tls:
+      enabled: true
+
+ingressRoute:
+  dashboard:
+    enabled: false
+
+
+
