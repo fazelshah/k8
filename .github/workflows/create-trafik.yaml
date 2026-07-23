@@ -51,6 +51,6 @@ jobs:
           helm upgrade --install traefik traefik/traefik \
             --namespace kube-system \
             --atomic \
-            --values ./trafikb.yaml \
+            --values ./trafik.yaml \
             --set clusterName=${{ github.event.inputs.eksClusterName }} \
             --set region=${{ github.event.inputs.awsRegion }}
