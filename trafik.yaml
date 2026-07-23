@@ -1,0 +1,24 @@
+deployment:
+  replicas: 1
+
+service:
+  enabled: true
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  annotations: {}
+
+providers:
+  kubernetesIngress:
+    enabled: true
+
+  kubernetesCRD:
+    enabled: true
+
+ports:
+  web:
+    expose:
+      default: true
+
+  websecure:
+    expose:
+      default: true
