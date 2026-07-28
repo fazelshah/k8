@@ -7,3 +7,6 @@ controller:
       service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
 
     externalTrafficPolicy: Local
+
+  http3:
+    enabled: false
