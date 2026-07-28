@@ -43,19 +43,15 @@ jobs:
         with:
           version: "v3.19.2"
 
-      - name: HAproxy Controller
+     
+      - name: HAProxy Controller
         run: |
-          helm repo add haproxytech https://haproxytech.github.io/helm-charts
+         helm repo add haproxytech https://haproxytech.github.io/helm-charts
+         helm repo update
 
-          helm repo update
-
-          helm upgrade --install haproxy \
-
-          haproxytech/kubernetes-ingress \
-
-          --namespace haproxy \
-
-          --create-namespace \
-
-          --values haproxy-values.yaml 
+         helm upgrade --install haproxy \
+         haproxytech/kubernetes-ingress \
+         --namespace haproxy \
+         --create-namespace \
+         --values haproxy-values.yaml
           
