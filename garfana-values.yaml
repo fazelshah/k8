@@ -2,6 +2,9 @@ ingress:
   enabled: true
   ingressClassName: traefik
 
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+
   hosts:
     - grafana.fazelshah.fun
 
@@ -9,7 +12,8 @@ ingress:
   pathType: Prefix
 
   tls:
-    - hosts:
+    - secretName: grafana-tls
+      hosts:
         - grafana.fazelshah.fun
 
 service:
