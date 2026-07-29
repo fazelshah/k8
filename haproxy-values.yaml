@@ -4,10 +4,13 @@ controller:
     enablePorts:
       quic: false
       https: true
+      admin: false
+      stat: false
 
     annotations:
       service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
       service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+      
 
     externalTrafficPolicy: Local
 
