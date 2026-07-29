@@ -3,6 +3,7 @@ controller:
     type: LoadBalancer
     enablePorts:
       quic: false
+      https: true
 
     annotations:
       service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
