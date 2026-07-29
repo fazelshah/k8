@@ -1,8 +1,7 @@
 controller:
   service:
     type: LoadBalancer
-    enablePorts:
-      quic: false
+    
 
     annotations:
       service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
@@ -10,5 +9,4 @@ controller:
 
     externalTrafficPolicy: Local
 
-  http3:
-    enabled: false
+  
