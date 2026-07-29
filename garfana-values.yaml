@@ -4,6 +4,10 @@ ingress:
 
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
+    haproxy-ingress.github.io/proxy-body-size: "1g"
+    haproxy-ingress.github.io/timeout-client: "180s"
+    haproxy-ingress.github.io/timeout-server: "180s"
+    haproxy-ingress.github.io/timeout-connect: "30s"
 
   hosts:
     - grafana.fazelshah.fun
