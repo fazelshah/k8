@@ -1,33 +1,32 @@
 apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
-
 metadata:
-  name: k8-cluster
+  name: cryptlex-eks-dev-cluster-v1-34
   region: ap-south-1
   version: "1.34"
 autoModeConfig:
   enabled: false
 addonsConfig:
   autoApplyPodIdentityAssociations: true
-
+availabilityZones: ["ap-south-1a", "ap-south-1c"]
 vpc:
   cidr: 192.169.0.0/16  #change to 192.168.0.0/16 in next deployment
   nat:
     gateway: Disable
-         
 
 iam:
-  withOIDC: true
-  serviceAccounts:
-    - metadata:
-        name: aws-load-balancer-controller
-        namespace: kube-system
+  withOIDC: false
+  podIdentityAssociations:
+    - namespace: kube-system
+      serviceAccountName: aws-load-balancer-controller
+      roleName: cryptlex-eks-dev-alb-controller-pi-role
+      createServiceAccount: true
       wellKnownPolicies:
-        awsLoadBalancerController: true  
-         
+        awsLoadBalancerController: true
+
 managedNodeGroups:
   - name: ng-1
-    instanceType: t3.medium
+    instanceType: t4g.medium
     minSize: 3
     maxSize: 3
     desiredCapacity: 3
@@ -38,9 +37,10 @@ managedNodeGroups:
     iam:
       withAddonPolicies:
         externalDNS: false
-        certManager: true
+        certManager: false
 
 addons:
+  - name: eks-pod-identity-agent
   - name: aws-ebs-csi-driver
     configurationValues: '{ "defaultStorageClass": { "enabled": true } }'
   - name: vpc-cni
@@ -51,5 +51,33 @@ addons:
     resolveConflicts: overwrite
   - name: metrics-server
     resolveConflicts: overwrite
-  - name: eks-pod-identity-agent
-  
+  - name: amazon-cloudwatch-observability
+    configurationValues: |
+      agent:
+       resources:
+        requests:
+          cpu: 150m
+          memory: 150Mi
+        limits:
+          cpu: 200m
+          memory: 200Mi
+       config:
+        metrics:
+          namespace: Custom/NodeMetrics
+          append_dimensions:
+             InstanceId: ${aws:InstanceId}
+             InstanceType: ${aws:InstanceType}
+             AutoScalingGroupName: ${aws:AutoScalingGroupName}
+          metrics_collected:
+            mem:
+              measurement:
+                - mem_used
+              metrics_collection_interval: 60
+            disk:
+              measurement:
+                - disk_used
+              resources:
+                - "/"
+              metrics_collection_interval: 60
+      containerLogs:
+       enabled: false
