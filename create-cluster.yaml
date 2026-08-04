@@ -37,7 +37,7 @@ managedNodeGroups:
     iam:
       withAddonPolicies:
         externalDNS: false
-        certManager: false
+        certManager: true
 
 addons:
   - name: eks-pod-identity-agent
