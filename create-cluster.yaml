@@ -24,7 +24,7 @@ iam:
 
 managedNodeGroups:
   - name: ng-1
-    instanceType: t4a.medium
+    instanceType: t3a.medium
     minSize: 3
     maxSize: 3
     desiredCapacity: 3
