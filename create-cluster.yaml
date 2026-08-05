@@ -8,25 +8,23 @@ autoModeConfig:
   enabled: false
 addonsConfig:
   autoApplyPodIdentityAssociations: true
-availabilityZones: ["ap-south-1a", "ap-south-1b"]
+availabilityZones: ["ap-south-1c", "ap-south-1b"]
 vpc:
   cidr: 192.169.0.0/16  #change to 192.168.0.0/16 in next deployment
   nat:
     gateway: Disable
 
 iam:
-  withOIDC: false
   podIdentityAssociations:
     - namespace: kube-system
       serviceAccountName: aws-load-balancer-controller
-      roleName: cryptlex-eks-dev-alb-controller-pi-role
       createServiceAccount: true
       wellKnownPolicies:
         awsLoadBalancerController: true
 
 managedNodeGroups:
   - name: ng-1
-    instanceType: t4g.medium
+    instanceType: t4a.medium
     minSize: 3
     maxSize: 3
     desiredCapacity: 3
