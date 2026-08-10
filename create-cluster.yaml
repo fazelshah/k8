@@ -32,9 +32,9 @@ managedNodeGroups:
     volumeType: gp3
     ssh:
       allow: false
-    kubeletExtraConfig:
-      imageGCHighThresholdPercent: 70
-      imageGCLowThresholdPercent: 50
+    kubeletExtraArgs:
+      image-gc-high-threshold: "70"
+      image-gc-low-threshold: "50"
     iam:
       withAddonPolicies:
         externalDNS: false
