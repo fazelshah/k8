@@ -1,0 +1,108 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-ingress
+  annotations:
+    {{ if eq .Values.ingress.className "alb" }}
+    {{ if not .Values.ingress.internal }}
+    alb.ingress.kubernetes.io/scheme: "internet-facing"
+    {{ end }}
+    alb.ingress.kubernetes.io/healthcheck-path: "/healthz"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443},{"HTTP":80}]'
+    alb.ingress.kubernetes.io/group.name: cryptlex-alb-group
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=180
+    alb.ingress.kubernetes.io/ssl-policy:  {{ .Values.ingress.tlsSecurityPolicy }}
+    {{ if .Values.ingress.inboundCidrs }}
+    alb.ingress.kubernetes.io/inbound-cidrs: "{{ join "," .Values.ingress.inboundCidrs }}"
+    {{ end }}
+    {{ if .Values.ingress.forceHttpsRedirect }}
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    {{ end }}
+    {{ else if eq .Values.ingress.className "nginx" }}
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
+    nginx.ingress.kubernetes.io/proxy-body-size: "1g"
+    nginx.ingress.kubernetes.io/proxy-buffers-number: "8"
+    nginx.ingress.kubernetes.io/ssl-redirect: "{{ .Values.ingress.forceHttpsRedirect }}"
+    {{ end }}
+    {{ if .Values.certmanager.enabled }}
+    {{ if .Values.certmanager.issuer.production }}
+    cert-manager.io/issuer: {{ .Release.Name }}-letsencrypt-production
+    {{ else}}
+    cert-manager.io/issuer: {{ .Release.Name }}-letsencrypt-staging
+    {{ end }}
+    {{ end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  {{ if .Values.certmanager.enabled }}
+  tls:
+    - hosts:
+        - "{{ .Values.ingress.hosts.webApiHost }}"
+        {{ if .Values.services.adminPortal.enabled }}
+        - "{{ .Values.ingress.hosts.adminPortalHost }}"
+        {{ end }}
+        {{ if .Values.services.customerPortal.enabled }}
+        - "{{ .Values.ingress.hosts.customerPortalHost }}"
+        {{ end }}
+        {{ if .Values.services.resellerPortal.enabled }}
+        - "{{ .Values.ingress.hosts.resellerPortalHost }}"
+        {{ end }}
+        {{ if .Values.services.filestore.enabled }}
+        - "{{ .Values.ingress.hosts.releaseServerHost }}"
+        {{ end }}
+      secretName: {{ printf "%s%s%s" .Release.Name .Values.ingress.hosts.webApiHost .Values.ingress.hosts.adminPortalHost | sha256sum | trunc 30}}-tls-secret
+  {{ end }}
+  rules:
+    - host: "{{ .Values.ingress.hosts.webApiHost }}"
+      http:
+        paths:
+          - backend:
+              service:
+                name: {{ .Release.Name }}-web-api-service
+                port: 
+                  number: 5000
+            pathType: ImplementationSpecific 
+    {{ if .Values.services.adminPortal.enabled }}
+    - host: "{{ .Values.ingress.hosts.adminPortalHost }}"
+      http:
+        paths:
+          - backend:
+              service:
+                name: {{ .Release.Name }}-admin-portal-service
+                port: 
+                  number: 4400
+            pathType: ImplementationSpecific 
+    {{ end }}
+    {{ if .Values.services.customerPortal.enabled }}
+    - host: "{{ .Values.ingress.hosts.customerPortalHost }}"
+      http:
+        paths:
+          - backend:
+              service:
+                name: {{ .Release.Name }}-customer-portal-service
+                port: 
+                  number: 4401
+            pathType: ImplementationSpecific 
+    {{ end }}
+    {{ if .Values.services.resellerPortal.enabled }}
+    - host: "{{ .Values.ingress.hosts.resellerPortalHost }}"
+      http:
+        paths:
+          - backend:
+              service:
+                name: {{ .Release.Name }}-reseller-portal-service
+                port: 
+                  number: 4402
+            pathType: ImplementationSpecific 
+    {{ end }}
+    {{ if .Values.services.filestore.enabled }}
+    - host: "{{ .Values.ingress.hosts.releaseServerHost }}"
+      http:
+        paths:
+          - backend:
+              service:
+                name: {{ .Release.Name }}-release-server-service
+                port: 
+                  number: 3000
+            pathType: ImplementationSpecific 
+    {{ end }}
+    
