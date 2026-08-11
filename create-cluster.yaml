@@ -32,9 +32,16 @@ managedNodeGroups:
     volumeType: gp3
     ssh:
       allow: false
-    kubeletExtraArgs:
-      image-gc-high-threshold: "70"
-      image-gc-low-threshold: "50"
+    # AL2023 nodes are bootstrapped by nodeadm; eksctl merges this NodeConfig
+    # into the generated user data. Defaults are 85/80.
+    overrideBootstrapCommand: |
+      apiVersion: node.eks.aws/v1alpha1
+      kind: NodeConfig
+      spec:
+        kubelet:
+          config:
+            imageGCHighThresholdPercent: 70
+            imageGCLowThresholdPercent: 50
     iam:
       withAddonPolicies:
         externalDNS: false
