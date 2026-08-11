@@ -52,5 +52,5 @@ jobs:
             --namespace traefik \
             --create-namespace \
             --atomic \
-            --values ./trafik.yaml \
-          
+            --values ./trafik.yaml
+
