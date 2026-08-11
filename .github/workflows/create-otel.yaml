@@ -44,10 +44,8 @@ jobs:
         run: |
           helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
           helm repo update
-          helm upgrade --install opentelemetry-collector open-telemetry/opentelemetry-collector --atomic --create-namespace --namespace apm --values otel.yaml 
-               
+          helm upgrade --install opentelemetry-collector open-telemetry/opentelemetry-collector --atomic --create-namespace --namespace apm --values otel.yaml
+
       - name: Deploy Helm chart daemon
         run: |
-          helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
-          helm repo update
-          helm upgrade --install opentelemetry-collector open-telemetry/opentelemetry-collector --atomic --create-namespace --namespace apm --values otel-daemon.yaml
+          helm upgrade --install opentelemetry-collector-agent open-telemetry/opentelemetry-collector --atomic --create-namespace --namespace apm --values otel-daemon.yaml
