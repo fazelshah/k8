@@ -10,7 +10,7 @@ ingress:
     haproxy-ingress.github.io/timeout-connect: "30s"
 
   hosts:
-    - grafana.fazelshah.fun
+    - grafana.fazelshah.com
 
   path: /
   pathType: Prefix
@@ -18,7 +18,7 @@ ingress:
   tls:
     - secretName: grafana-tls
       hosts:
-        - grafana.fazelshah.fun
+        - grafana.fazelshah.com
 
 service:
   type: ClusterIP
