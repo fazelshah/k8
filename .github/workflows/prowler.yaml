@@ -1,0 +1,93 @@
+name: Prowler Security Scan (EKS)
+ 
+on:
+  workflow_dispatch:
+    inputs:
+      severity:
+        description: 'Severity levels to scan for'
+        required: false
+        default: 'critical high medium'
+        type: string
+      skip_k8s:
+        description: 'Skip the Kubernetes/EKS scan (AWS-provider only)'
+        required: false
+        default: false
+        type: boolean
+ 
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    name: Prowler scan - ${{ matrix.cluster.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        cluster:
+          - name: k8-cluster
+            region: ap-south-1
+    
+          # add additional clusters/regions here, e.g. us-east-1
+ 
+    env:
+      # Option A: reuse existing deploy credentials (quick start, not least-privilege)
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_EKS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_EKS_SECRET_ACCESS_KEY }}
+      # Option B (recommended): separate read-only credentials
+      # AWS_ACCESS_KEY_ID: ${{ secrets.PROWLER_AWS_ACCESS_KEY_ID }}
+      # AWS_SECRET_ACCESS_KEY: ${{ secrets.PROWLER_AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ matrix.cluster.region }}
+ 
+    steps:
+      - name: Install AWS CLI (usually preinstalled on ubuntu-latest, kept for safety)
+        run: aws --version || (curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip && unzip -q awscliv2.zip && sudo ./aws/install)
+ 
+      - name: Install Prowler
+        run: pipx install prowler
+ 
+      - name: Run Prowler AWS scan
+        env:
+          SEVERITY: ${{ inputs.severity }}
+          REGION: ${{ matrix.cluster.region }}
+        run: |
+          # --ignore-exit-code-3: prowler exits 3 whenever it finds failing
+          # checks, which would abort the job before the Kubernetes scan runs.
+          prowler aws \
+            -f "$REGION" \
+            --severity $SEVERITY \
+            --ignore-exit-code-3 \
+            --output-formats csv json-ocsf html \
+            --output-directory ./output/aws
+ 
+      - name: Update kubeconfig for target cluster
+        if: github.event.inputs.skip_k8s != 'true'
+        run: |
+          # --alias so the context is named "k8-cluster" rather than the full
+          # cluster ARN, which is what --context expects below.
+          aws eks update-kubeconfig \
+            --name ${{ matrix.cluster.name }} \
+            --region ${{ matrix.cluster.region }} \
+            --alias ${{ matrix.cluster.name }}
+ 
+      - name: Run Prowler Kubernetes scan
+        if: github.event.inputs.skip_k8s != 'true'
+        env:
+          SEVERITY: ${{ inputs.severity }}
+        run: |
+          prowler kubernetes \
+            --kubeconfig-file ~/.kube/config \
+            --context ${{ matrix.cluster.name }} \
+            --severity $SEVERITY \
+            --ignore-exit-code-3 \
+            --output-formats csv json-ocsf html \
+            --output-directory ./output/k8s
+ 
+      - name: Upload combined report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: prowler-report-${{ matrix.cluster.name }}
+          path: ./output/
+          if-no-files-found: warn
+          retention-days: 30
