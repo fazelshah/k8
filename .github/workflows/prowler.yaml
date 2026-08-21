@@ -1,5 +1,5 @@
-name: Prowler Security Scan (EKS)
- 
+name: Prowler EKS Scan
+
 on:
   workflow_dispatch:
     inputs:
@@ -8,86 +8,127 @@ on:
         required: false
         default: 'critical high medium'
         type: string
-      skip_k8s:
-        description: 'Skip the Kubernetes/EKS scan (AWS-provider only)'
-        required: false
-        default: false
-        type: boolean
- 
+
 permissions:
   contents: read
 
+env:
+  CLUSTER_NAME: k8-cluster
+  CLUSTER_REGION: ap-south-1
+
 jobs:
   scan:
-    name: Prowler scan - ${{ matrix.cluster.name }}
+    name: Prowler EKS scan
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        cluster:
-          - name: k8-cluster
-            region: ap-south-1
-    
-          # add additional clusters/regions here, e.g. us-east-1
- 
+
     env:
-      # Option A: reuse existing deploy credentials (quick start, not least-privilege)
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_EKS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_EKS_SECRET_ACCESS_KEY }}
-      # Option B (recommended): separate read-only credentials
-      # AWS_ACCESS_KEY_ID: ${{ secrets.PROWLER_AWS_ACCESS_KEY_ID }}
-      # AWS_SECRET_ACCESS_KEY: ${{ secrets.PROWLER_AWS_SECRET_ACCESS_KEY }}
-      AWS_DEFAULT_REGION: ${{ matrix.cluster.region }}
- 
+      AWS_DEFAULT_REGION: ap-south-1
+
     steps:
-      - name: Install AWS CLI (usually preinstalled on ubuntu-latest, kept for safety)
-        run: aws --version || (curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip && unzip -q awscliv2.zip && sudo ./aws/install)
- 
       - name: Install Prowler
         run: pipx install prowler
- 
-      - name: Run Prowler AWS scan
-        env:
-          SEVERITY: ${{ inputs.severity }}
-          REGION: ${{ matrix.cluster.region }}
+
+      - name: Show clusters visible to these credentials
         run: |
-          # --ignore-exit-code-3: prowler exits 3 whenever it finds failing
-          # checks, which would abort the job before the Kubernetes scan runs.
-          prowler aws \
-            -f "$REGION" \
-            --severity $SEVERITY \
-            --ignore-exit-code-3 \
-            --output-formats csv json-ocsf html \
-            --output-directory ./output/aws
- 
-      - name: Update kubeconfig for target cluster
-        if: github.event.inputs.skip_k8s != 'true'
+          echo "EKS clusters in $CLUSTER_REGION:"
+          aws eks list-clusters --region "$CLUSTER_REGION"
+
+      - name: Update kubeconfig
         run: |
-          # --alias so the context is named "k8-cluster" rather than the full
-          # cluster ARN, which is what --context expects below.
           aws eks update-kubeconfig \
-            --name ${{ matrix.cluster.name }} \
-            --region ${{ matrix.cluster.region }} \
-            --alias ${{ matrix.cluster.name }}
- 
+            --name "$CLUSTER_NAME" \
+            --region "$CLUSTER_REGION" \
+            --alias "$CLUSTER_NAME"
+
+      - name: Verify cluster connectivity
+        run: |
+          kubectl config current-context
+          kubectl get nodes
+
       - name: Run Prowler Kubernetes scan
-        if: github.event.inputs.skip_k8s != 'true'
         env:
           SEVERITY: ${{ inputs.severity }}
         run: |
+          # --ignore-exit-code-3: prowler exits 3 when it finds failing checks,
+          # which would otherwise abort the job before the summary step runs.
           prowler kubernetes \
             --kubeconfig-file ~/.kube/config \
-            --context ${{ matrix.cluster.name }} \
+            --context "$CLUSTER_NAME" \
             --severity $SEVERITY \
             --ignore-exit-code-3 \
-            --output-formats csv json-ocsf html \
-            --output-directory ./output/k8s
- 
-      - name: Upload combined report
+            --output-formats csv html \
+            --output-directory ./output
+
+      - name: Write findings to run summary
+        if: always()
+        run: |
+          python3 << 'PYEOF'
+          import csv, glob, os
+          from collections import Counter
+
+          ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3, "informational": 4}
+          summary = os.environ["GITHUB_STEP_SUMMARY"]
+          files = glob.glob("output/*.csv")
+
+          with open(summary, "a") as out:
+              if not files:
+                  out.write("## EKS scan\n\nNo report generated — check the scan step logs above.\n")
+                  raise SystemExit(0)
+
+              fails = []
+              passed = 0
+              with open(files[0], newline="", encoding="utf-8") as f:
+                  for row in csv.DictReader(f, delimiter=";"):
+                      if row["STATUS"] == "FAIL":
+                          fails.append(row)
+                      elif row["STATUS"] == "PASS":
+                          passed += 1
+
+              fails.sort(key=lambda r: ORDER.get(r["SEVERITY"].lower(), 9))
+              counts = Counter(r["SEVERITY"].lower() for r in fails)
+
+              out.write(f"## EKS cluster: {os.environ['CLUSTER_NAME']}\n\n")
+              out.write(f"**{len(fails)} issues found** ({passed} checks passed)\n\n")
+
+              if counts:
+                  parts = [f"{counts[s]} {s}" for s in ORDER if counts.get(s)]
+                  out.write(" · ".join(parts) + "\n\n")
+
+              if not fails:
+                  out.write("No failing checks at the selected severity levels.\n")
+                  raise SystemExit(0)
+
+              out.write("| # | Severity | Issue | Affected resource |\n")
+              out.write("|---|---|---|---|\n")
+              for i, r in enumerate(fails, 1):
+                  sev = r["SEVERITY"].upper()
+                  title = r["CHECK_TITLE"].replace("|", "-").strip()
+                  res = (r["RESOURCE_NAME"] or r["RESOURCE_UID"]).replace("|", "-").strip()
+                  if len(res) > 70:
+                      res = res[:67] + "..."
+                  out.write(f"| {i} | {sev} | {title} | `{res}` |\n")
+
+              out.write("\n<details><summary>Why each issue matters &amp; how to fix</summary>\n\n")
+              for i, r in enumerate(fails, 1):
+                  out.write(f"**{i}. {r['CHECK_TITLE'].strip()}** — `{r['SEVERITY'].upper()}`\n\n")
+                  if r.get("RISK"):
+                      out.write(f"- Risk: {r['RISK'].strip()}\n")
+                  fix = r.get("REMEDIATION_RECOMMENDATION_TEXT", "").strip()
+                  if fix:
+                      out.write(f"- Fix: {fix}\n")
+                  if r.get("STATUS_EXTENDED"):
+                      out.write(f"- Detail: {r['STATUS_EXTENDED'].strip()}\n")
+                  out.write("\n")
+              out.write("</details>\n")
+          PYEOF
+
+      - name: Upload full report
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: prowler-report-${{ matrix.cluster.name }}
+          name: prowler-eks-report
           path: ./output/
           if-no-files-found: warn
           retention-days: 30
